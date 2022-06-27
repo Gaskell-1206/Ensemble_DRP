@@ -9,8 +9,9 @@ import pandas as pd
 import torch
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
-from sklearn.impute import KNNImputer
+# from sklearn.impute import KNNImputer
 from sklearn.preprocessing import scale
+from fancyimpute import SimpleFill, KNN, SoftImpute, BiScaler, NuclearNormMinimization, IterativeImputer, IterativeSVD
 pd.options.mode.chained_assignment = None
 
 def calculate_DAS28_CRP(row):
@@ -67,6 +68,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             challenge: regression(DAS-28CRP), classification(3MResponse), two_stage(both)
             dataset: Dataset used for modeling ("CORRONA CERTAIN")
             process_approach: Dataset process approach. (KVB - from previous student ) (SC)
+            imputation: imputation methods
             patient_group: Patient group
             drug_group: Medication group
             train_test_rate: sample rate for train and test set
@@ -77,7 +79,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                 'challenge should be either "regression", "classification" or "two_stage"')
         if process_approach not in ("KVB", "SC"):
             raise ValueError('process_approach should be either "KVB" or "SC"')
-        if patient_group not in ("all", "bioexp nTNF", "bionaive TNF", 'bionaive orencia', 'KVB'):
+        if patient_group not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
             raise ValueError(
                 'patient_group should be either "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"')
         if drug_group not in ("all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"):
@@ -137,17 +139,18 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             
             # impute missing time-series rows
             df = self.transform_time_series_data(df)
-        
+
             # train test split (only split rows without NaN in features used to calculate DAS-28CRP into testset)
             train_idx, test_idx, df = self.split_data(df)
+            
             # Imputation
-            if self.imputation == "KNN":
-                imputed_train, imputed_test = self.KNN_imputation(
-                    df, train_idx, test_idx)
-            else:
+            if self.imputation == None:
                 # return raw
                 imputed_train = df[df['UNMC_id'].isin(train_idx)]
                 imputed_test = df[df['UNMC_id'].isin(test_idx)]
+                
+            else:
+                imputed_train, imputed_test = self.Apply_imputation(df, train_idx, test_idx)
                 
             # print(imputed_train['futime'].value_counts())
 
@@ -215,8 +218,9 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
 
         return trainset, testset, df
 
-    def KNN_imputation(self, df, train_idx, test_idx):
-        
+    def Apply_imputation(self, df, train_idx, test_idx):
+        # use md to impute pt NaN
+        df['pt_global_assess'] = df.apply(lambda row: self.impute_pt_global_assess(row), axis=1)
         # tranform categorical features
         encoders = dict()
         for col_name in self.categorical:
@@ -232,19 +236,34 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             columns=['UNMC_id', 'CDate'])
         test = df[df['UNMC_id'].isin(test_idx)].drop(
             columns=['UNMC_id', 'CDate'])
-        # KNN imputation
-        imputer = KNNImputer(n_neighbors=20)
-        fit_train = imputer.fit(train)
+        
+        # imputation
+        if self.imputation == 'SimpleFill':
+            imputer = SimpleFill()
+        elif self.imputation == 'KNN':
+            imputer = KNN(k=15)
+        elif self.imputation == 'NuclearNormMinimization':
+            imputer = NuclearNormMinimization()
+        elif self.imputation == 'BiScaler':
+            imputer = BiScaler()
+        elif self.imputation == 'SoftImpute':
+            imputer = SoftImpute()
+        elif self.imputation == 'IterativeImputer':
+            imputer = IterativeImputer()
+        elif self.imputation == 'IterativeSVD':
+            imputer = IterativeSVD()
+            
         # impute train set
-        imputed_train = fit_train.transform(train)
+        imputed_train = imputer.fit_transform(train)
         imputed_train_df = pd.DataFrame(imputed_train, columns=train.columns)
         imputed_train_df['UNMC_id'] = train_UNMC_id.values
         # print("NaN in train:",imputed_train_df[imputed_train_df.isna().any(axis=1)])
         # impute test set
-        imputed_test = fit_train.transform(test)
+        imputed_test = imputer.fit_transform(test)
         imput_test_df = pd.DataFrame(imputed_test, columns=test.columns)
         imput_test_df['UNMC_id'] = test_UNMC_id.values
-
+        # print("imputed_train_df:", imputed_train_df)
+        # print("imput_test_df:", imput_test_df)
         return imputed_train_df, imput_test_df
 
     # def impute_DAS_28_features(self, df_to_impute):
@@ -308,19 +327,19 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
 
         # create delta for regression tasks
         if self.challenge == "regression":
-            pass
-            # df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_3M'] - \
-            #     df_merged['DAS28_CRP_0M']
+            df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_3M'] - \
+                df_merged['DAS28_CRP_0M']
         # create 3MResponse for classification tasks
         elif self.challenge == "classification":
             df_merged.loc[:, '3MResponse'] = df_merged.apply(
                 lambda row: responseClassify(row), axis=1)
         # create two_stage data
         elif self.challenge == "two_stage":
-            df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_3M'] - \
-                df_merged['DAS28_CRP_0M']
-            df_merged.loc[:, '3MResponse'] = df_merged.apply(
-                lambda row: responseClassify(row), axis=1)
+            # df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_3M'] - \
+            #     df_merged['DAS28_CRP_0M']
+            # df_merged.loc[:, '3MResponse'] = df_merged.apply(
+            #     lambda row: responseClassify(row), axis=1)
+            pass
         # df_merged = df_merged.drop(columns="DAS28_CRP_3M")
 
         if self.patient_group != 'all':
@@ -371,14 +390,17 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         return self.df_test, self.test_csv_loc
 
 # dataset = CoronnaCERTAINDataset(
-#     library_root = '/Users/gaskell/Dropbox/Mac/Desktop/Autoimmune_Disease/Code/ML_RA_EHR/Dataset/',
-#     challenge = "classification",
-#     dataset = 'CORRONA CERTAIN',
-#     process_approach = 'SC',
-#     patient_group = 'bionaive TNF',
-#     drug_group = 'all',
-#     save_csv = True,
-#     )
+#     library_root='/Users/gaskell/Dropbox/Mac/Desktop/Autoimmune_Disease/Code/ML_RA_EHR/Dataset/',
+#     challenge="regression",
+#     dataset='CORRONA CERTAIN',
+#     process_approach='SC',
+#     imputation='KNN',
+#     patient_group='bionaive TNF',
+#     drug_group='all',
+#     time_points=(0,3),
+#     train_test_rate=0.8,
+#     save_csv=False,
+#     random_state=2022)
 
 # train = dataset.get_train()
 # test = dataset.get_test()
