@@ -18,12 +18,12 @@ def calculate_DAS28_CRP(row):
         row['swollen_jts_28']) + 0.014*row['pt_global_assess'] + 0.36*np.log(row['usresultsCRP']+1) + 0.96
     return DAS28_CRP
 
-def responseClassify(row):
+def responseClassify(row,baseline='DAS28_CRP_0M',next='DAS28_CRP_3M'):
     # set threshold
     lower_change = 0.6
     upper_change = 1.2
     
-    change = row['DAS28_CRP_0M'] - row['DAS28_CRP_3M']
+    change = row[baseline] - row[next]
 
     if change <= lower_change:
         return "No Response"

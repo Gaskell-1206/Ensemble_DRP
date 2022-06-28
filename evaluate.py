@@ -157,16 +157,16 @@ class AutoBuild():
         else:
             return contingency_matrix
 
-    def plot_results(self, mode):
+    def plot_results(self, mode, metics):
         if mode == 'classification':
             results = self.classification_leaderboard
 
             fig = plt.figure()
             ax = fig.add_axes([0, 0, 1, 1])
-            ax.barh(results['model'], results['Accuracy'])
-            ax.set_xlabel('Accuracy')
+            ax.barh(results['model'], results[metics])
+            ax.set_xlabel(metics)
             ax.set_ylabel('Models')
-            ax.set_title('Classification Accuracy')
+            ax.set_title(f'Classification {metics}')
             # ax.set_xticks(ind, ('G1', 'G2', 'G3', 'G4', 'G5'))
             # ax.set_yticks(np.arange(0, 81, 10))
             # ax.legend(labels=['Men', 'Women'])
@@ -176,10 +176,10 @@ class AutoBuild():
             results = self.regression_leaderboard
             fig = plt.figure()
             ax = fig.add_axes([0, 0, 1, 1])
-            ax.barh(results['model'], results['MSE'])
-            ax.set_xlabel('MSE')
+            ax.barh(results['model'], results[metics])
+            ax.set_xlabel(metics)
             ax.set_ylabel('Models')
-            ax.set_title('Regression MSE')
+            ax.set_title(f'Regression {metics}')
             # ax.set_xticks(ind, ('G1', 'G2', 'G3', 'G4', 'G5'))
             # ax.set_yticks(np.arange(0, 81, 10))
             # ax.legend(labels=['Men', 'Women'])
