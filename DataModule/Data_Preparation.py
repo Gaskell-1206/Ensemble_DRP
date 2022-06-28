@@ -7,11 +7,10 @@ from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import torch
+from fancyimpute import (KNN, BiScaler, IterativeImputer, IterativeSVD,
+                         NuclearNormMinimization, SimpleFill, SoftImpute)
 from sklearn import preprocessing
-from sklearn.model_selection import train_test_split
-# from sklearn.impute import KNNImputer
-from sklearn.preprocessing import scale
-from fancyimpute import SimpleFill, KNN, SoftImpute, BiScaler, NuclearNormMinimization, IterativeImputer, IterativeSVD
+
 pd.options.mode.chained_assignment = None
 
 def calculate_DAS28_CRP(row):
@@ -19,23 +18,23 @@ def calculate_DAS28_CRP(row):
         row['swollen_jts_28']) + 0.014*row['pt_global_assess'] + 0.36*np.log(row['usresultsCRP']+1) + 0.96
     return DAS28_CRP
 
-def responseClassify(row, baseline="DAS28_CRP_0M", next="DAS28_CRP_3M"):
+def responseClassify(row):
     # set threshold
-    low_change = 0.6
-    high_change = 1.2
+    lower_change = 0.6
+    upper_change = 1.2
+    
+    change = row['DAS28_CRP_0M'] - row['DAS28_CRP_3M']
 
-    change = row[baseline] - row[next]
-
-    if change <= low_change:
+    if change <= lower_change:
         return "No Response"
 
-    elif (change <= high_change) & (change > low_change):
+    elif (change <= upper_change) & (change > lower_change):
         if row[next] > 5.1:
             return "No Response"
         else:
             return "Moderate"
 
-    elif change > high_change:
+    elif change > upper_change:
         if row[next] > 3.2:
             return "Moderate"
         else:
@@ -327,20 +326,16 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
 
         # create delta for regression tasks
         if self.challenge == "regression":
-            df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_3M'] - \
-                df_merged['DAS28_CRP_0M']
+            df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_0M'] - \
+                df_merged['DAS28_CRP_3M']
+            df_merged = df_merged.drop(columns="DAS28_CRP_3M")
         # create 3MResponse for classification tasks
         elif self.challenge == "classification":
             df_merged.loc[:, '3MResponse'] = df_merged.apply(
                 lambda row: responseClassify(row), axis=1)
         # create two_stage data
         elif self.challenge == "two_stage":
-            # df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_3M'] - \
-            #     df_merged['DAS28_CRP_0M']
-            # df_merged.loc[:, '3MResponse'] = df_merged.apply(
-            #     lambda row: responseClassify(row), axis=1)
             pass
-        # df_merged = df_merged.drop(columns="DAS28_CRP_3M")
 
         if self.patient_group != 'all':
             df_merged = df_merged.drop(columns='init_group')
