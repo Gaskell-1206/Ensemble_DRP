@@ -10,7 +10,6 @@ import torch
 from fancyimpute import (KNN, BiScaler, IterativeImputer, IterativeSVD,
                          NuclearNormMinimization, SimpleFill, SoftImpute)
 from sklearn import preprocessing
-
 pd.options.mode.chained_assignment = None
 
 def calculate_DAS28_CRP(row):
