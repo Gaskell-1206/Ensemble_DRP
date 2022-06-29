@@ -78,7 +78,12 @@ class AutoBuild():
 
     def evaluate(self, model_name, true, pred):
         baseline = true['DAS28_CRP_0M']
-        true = true['delta'] if self.challenge == 'regression' else true['DAS28_CRP_3M']
+        if(self.challenge=="regression"):
+            true = true['delta']
+        elif(self.challenge=="classification"):
+            true=true["3MResponse"]
+        else:
+            true=true['DAS28_CRP_3M']
         baseline, true, pred = np.array(
             baseline), np.array(true), np.array(pred)
         assert len(baseline) == len(true)
