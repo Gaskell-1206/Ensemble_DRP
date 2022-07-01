@@ -239,7 +239,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         if self.imputation == 'SimpleFill':
             imputer = SimpleFill()
         elif self.imputation == 'KNN':
-            imputer = KNN(k=15)
+            imputer = KNN(k=15,verbose=False)
         elif self.imputation == 'NuclearNormMinimization':
             imputer = NuclearNormMinimization()
         elif self.imputation == 'BiScaler':
@@ -252,50 +252,19 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             imputer = IterativeSVD()
             
         # impute train set
+        print("Missing values in train before imputation:", len(train[train.isna().any(axis=1)]))
         imputed_train = imputer.fit_transform(train)
         imputed_train_df = pd.DataFrame(imputed_train, columns=train.columns)
         imputed_train_df['UNMC_id'] = train_UNMC_id.values
-        # print("NaN in train:",imputed_train_df[imputed_train_df.isna().any(axis=1)])
+        print("Missing values in train after imputation:", len(imputed_train_df[imputed_train_df.isna().any(axis=1)]))
+        
         # impute test set
+        print("Missing values in test before imputation:", len(test[test.isna().any(axis=1)]))
         imputed_test = imputer.fit_transform(test)
         imput_test_df = pd.DataFrame(imputed_test, columns=test.columns)
         imput_test_df['UNMC_id'] = test_UNMC_id.values
-        # print("imputed_train_df:", imputed_train_df)
-        # print("imput_test_df:", imput_test_df)
+        print("Missing values in test after imputation:", len(imput_test_df[imput_test_df.isna().any(axis=1)]))
         return imputed_train_df, imput_test_df
-
-    # def impute_DAS_28_features(self, df_to_impute):
-    #     # impute pt_global_assess
-    #     df_to_impute['pt_global_assess'] = df_to_impute.apply(
-    #         lambda row: self.impute_pt_global_assess(row), axis=1)
-    #     # drop NaN in feautres used for calculating DAS-28
-    #     df_to_impute = df_to_impute.dropna(axis=0, subset=[
-    #                                        'tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'], thresh=3)
-    #     # impute 'tender_jts_28','swollen_jts_28','usresultsCRP' if only one missing
-    #     df_for_imputation = df_to_impute.drop(columns=['UNMC_id'])
-
-    #     # tranform categorical features
-    #     encoders = dict()
-    #     for col_name in self.categorical:
-    #         series = df_for_imputation[col_name]
-    #         label_encoder = preprocessing.LabelEncoder()
-    #         df_for_imputation[col_name] = pd.Series(label_encoder.fit_transform(
-    #             series[series.notnull()]), index=series[series.notnull()].index)
-    #         encoders[col_name] = label_encoder
-    #     df_for_imputation = df_for_imputation.reset_index(
-    #         drop=True, inplace=True)
-
-    #     imputer = KNNImputer(n_neighbors=50, weights="uniform")
-    #     df_temp = pd.DataFrame(imputer.fit_transform(df_for_imputation))
-    #     df_temp.columns = df_for_imputation.columns
-    #     df_to_impute['tender_jts_28'] = df_temp['tender_jts_28']
-    #     df_to_impute['swollen_jts_28'] = df_temp['swollen_jts_28']
-    #     df_to_impute['pt_global_assess'] = df_temp['pt_global_assess']
-    #     df_to_impute['usresultsCRP'] = df_temp['usresultsCRP']
-    #     df_to_impute['DAS28_CRP'] = df_to_impute.apply(
-    #         lambda row: calculate_DAS28_CRP(row), axis=1)
-
-    #     return df_to_impute
 
     def check_dir(self, file_name):
         directory = os.path.dirname(file_name)
@@ -332,6 +301,11 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         elif self.challenge == "classification":
             df_merged.loc[:, '3MResponse'] = df_merged.apply(
                 lambda row: responseClassify(row), axis=1)
+            le = preprocessing.LabelEncoder()
+            df_merged['3MResponse'] = le.fit_transform(df_merged['3MResponse'])
+            inverse = le.inverse_transform([0,1,2])
+            print(f"Label Encoder, 0:{inverse[0]}, 1:{inverse[1]}, 2:{inverse[0]}")
+            
         # create two_stage data
         elif self.challenge == "two_stage":
             pass
