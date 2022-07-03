@@ -35,93 +35,69 @@ def Classification_Accuracy(true, pred):
 def F1_Score(true, pred):
     return metrics.f1_score(true, pred,average='macro')
 
-def responseClassify(row, baseline, next, delta=False):
-    # set threshold
-    lower_change = 0.6
-    upper_change = 1.2
-    
-    if delta:
-        change = row[next]
-        row[next] = row[baseline] - change
-    else:
-        change = row[baseline] - row[next]
-
-    if change <= lower_change:
-        return "No Response"
-
-    elif (change <= upper_change) & (change > lower_change):
-        if row[next] > 5.1:
-            return "No Response"
-        else:
-            return "Moderate"
-
-    elif change > upper_change:
-        if row[next] > 3.2:
-            return "Moderate"
-        else:
-            return "Good"
-
-    else:
-        return "Unknown"
-
-
 class AutoBuild():
-    def __init__(self, seed=1, project_name="EHR_RA_SC", challenge="two_stage"):
+    def __init__(self, seed=1, project_name="EHR_RA_SC", challenge="regression"):
         self.seed = seed
         self.project_name = project_name
         self.challenge = challenge
+        if challenge == "regression":
+            self.target = "DAS28_CRP_3M"
+        elif challenge == "regression_delta":
+            self.target = "delta"
+        elif challenge == "classification":
+            self.target = "DrugResponse"
+        elif challenge == "binary_classification":
+            self.target = "DrugResponse_binary"
         self.regression_leaderboard = pd.DataFrame(
             columns=["model", "MAE", "MSE", "RMSE", "R2", "Pearson_Correlation"])
         self.classification_leaderboard = pd.DataFrame(
             columns=["model", "Accuracy","F1-Score"])
         self.saved_model = {}
-
-    def evaluate(self, model_name, true, pred):
-        baseline = true['DAS28_CRP_0M']
-        if(self.challenge=="regression"):
-            true = true['delta']
-        elif(self.challenge=="classification"):
-            true=true["3MResponse"]
+        
+    def responseClassify(self, row, baseline, next):
+        # set threshold
+        lower_change = 0.6
+        upper_change = 1.2
+        
+        if self.challenge == "regression_delta":
+            change = row[next]
+            row[next] = row[baseline] - change
         else:
-            true=true['DAS28_CRP_3M']
-        baseline, true, pred = np.array(
-            baseline), np.array(true), np.array(pred)
+            change = row[baseline] - row[next]
+
+        if change <= lower_change:
+            return "No Response"
+
+        elif (change <= upper_change) & (change > lower_change):
+            if row[next] > 5.1:
+                return "No Response"
+            else:
+                return "Moderate"
+
+        elif change > upper_change:
+            if row[next] > 3.2:
+                return "Moderate"
+            else:
+                return "Good"
+
+        else:
+            return "Unknown"
+
+    def evaluate(self, model_id, model, test):
+        X_test = test.drop(columns=self.target)
+        true = test[self.target]
+        pred = model.predict(X_test)
+        baseline = test['DAS28_CRP_0M']
+            
+        baseline, true, pred = np.array(baseline), np.array(true), np.array(pred)
         assert len(baseline) == len(true)
         assert len(true) == len(pred)
         
-        if self.challenge == "regression":
-            df = pd.DataFrame(list(zip(baseline, true, pred)),
-                            columns=['baseline', 'true', 'pred'])
-
-            self.regression_leaderboard.loc[len(self.regression_leaderboard.index)] = [model_name,
-                                                                                    MAE(true,pred),
-                                                                                    MSE(true,pred),
-                                                                                    RMSE(true, pred),
-                                                                                    R2(true,pred),
-                                                                                    Pearson_Correlation(true, pred)]
-            
-            # get classification target
-            classification_true = df.apply(
-                lambda row: responseClassify(row, 'baseline', 'true', True), axis=1)
-            classification_pred = df.apply(
-                lambda row: responseClassify(row, 'baseline', 'pred', True), axis=1)
-            self.saved_model[model_name] = (
-                classification_true, classification_pred)
-            
-            self.classification_leaderboard.loc[len(self.classification_leaderboard.index)] = [model_name,
-                                                                                           Classification_Accuracy(classification_true, classification_pred),
-                                                                                           F1_Score(classification_true, classification_pred)]
-            
-        elif self.challenge == "classification":
-            self.classification_leaderboard.loc[len(self.classification_leaderboard.index)] = [model_name,
-                                                                                            Classification_Accuracy(true, pred),
-                                                                                            F1_Score(true, pred)]
+        df = pd.DataFrame(list(zip(baseline, true, pred)), columns=['baseline', 'true', 'pred'])
         
-        elif self.challenge == "two_stage":
-            df = pd.DataFrame(list(zip(baseline, true, pred)),
-                            columns=['baseline', 'true', 'pred'])
+        if "regression" in self.challenge:
 
-            self.regression_leaderboard.loc[len(self.regression_leaderboard.index)] = [model_name,
+            self.regression_leaderboard.loc[len(self.regression_leaderboard.index)] = [model_id,
                                                                                     MAE(true,pred),
                                                                                     MSE(true,pred),
                                                                                     RMSE(true, pred),
@@ -130,29 +106,31 @@ class AutoBuild():
             
             # get classification target
             classification_true = df.apply(
-                lambda row: responseClassify(row, 'baseline', 'true', False), axis=1)
+                lambda row: self.responseClassify(row, 'baseline', 'true'), axis=1)
             classification_pred = df.apply(
-                lambda row: responseClassify(row, 'baseline', 'pred', False), axis=1)
-            self.saved_model[model_name] = (
-                classification_true, classification_pred)
+                lambda row: self.responseClassify(row, 'baseline', 'pred'), axis=1)
+            self.saved_model[model_id] = (classification_true, classification_pred)
             
-            self.classification_leaderboard.loc[len(self.classification_leaderboard.index)] = [model_name,
+            self.classification_leaderboard.loc[len(self.classification_leaderboard.index)] = [model_id,
                                                                                            Classification_Accuracy(classification_true, classification_pred),
                                                                                            F1_Score(classification_true, classification_pred)]
-
+            
+        elif "classification" in self.challenge:
+            self.classification_leaderboard.loc[len(self.classification_leaderboard.index)] = [model_id,
+                                                                                            Classification_Accuracy(df['true'], df['pred']),
+                                                                                            F1_Score(df['true'], df['pred'])]
+            self.saved_model[model_id] = (df['true'], df['pred'])
+        
     def leaderboard(self):
-        if self.challenge == "regression":
+        if "regression" in self.challenge:
             return self.regression_leaderboard, self.classification_leaderboard
-        elif self.challenge == "classification":
-            return self.classification_leaderboard
-        elif self.challenge == "two_stage":
-            return self.regression_leaderboard, self.classification_leaderboard
+        elif "classification" in self.challenge:
+            return None, self.classification_leaderboard
+        else:
+            print("challenge does not exist")
 
-    def confusion_matrix(self, model_name, plot=True, normalize=True):
-        true, pred = self.saved_model[model_name]
-        # title_list = ['Good', 'Moderate', 'No Response']
-        # matrix = metrics.confusion_matrix(true, pred)
-        # matrix = pd.DataFrame(matrix, columns=title_list, index=title_list)
+    def confusion_matrix(self, model_id, plot=True, normalize=True):
+        true, pred = self.saved_model[model_id]
         if normalize:
             contingency_matrix = pd.crosstab(true, pred, rownames=['true'], colnames=['prediction'],normalize=True)
         else:
@@ -189,3 +167,6 @@ class AutoBuild():
             # ax.set_yticks(np.arange(0, 81, 10))
             # ax.legend(labels=['Men', 'Women'])
             plt.show()
+            
+        else:
+            print("mode does not exist")

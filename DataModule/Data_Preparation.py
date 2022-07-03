@@ -63,7 +63,10 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
 
         Args:
             library_root: Path to the root director of library file
-            challenge: regression(DAS-28CRP), classification(3MResponse), two_stage(both)
+            challenge: regression (numerical, DAS-28CRP value),
+                       regression_delta (numerical, changes of DAS-28CRP)
+                       classification (categorical: Good, Moderate, No Response)
+                       binary_classification (categorical: Responder, Non-responders)
             dataset: Dataset used for modeling ("CORRONA CERTAIN")
             process_approach: Dataset process approach. (KVB - from previous student ) (SC)
             imputation: imputation methods
@@ -72,9 +75,9 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             train_test_rate: sample rate for train and test set
             save_csv: If True, dataframe will be saved in "../Dataset/Coronna_Data_CERTAIN_{approach}_{time_1}M_{time_2}M_{subset}_{dataset}.csv"
         """
-        if challenge not in ("regression", "classification", "two_stage"):
+        if challenge not in ("regression", "regression_delta", "classification", "binary_classification"):
             raise ValueError(
-                'challenge should be either "regression", "classification" or "two_stage"')
+                'challenge should be either "regression", "regression_delta", "classification", or "binary_classification"')
         if process_approach not in ("KVB", "SC"):
             raise ValueError('process_approach should be either "KVB" or "SC"')
         if patient_group not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
@@ -105,6 +108,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         self.imputation = imputation
         self.patient_group = patient_group
         self.drug_group = drug_group
+        self.time_points = time_points
         self.train_test_rate = train_test_rate
         self.save_csv = save_csv
         self.sample_list = []
@@ -117,16 +121,12 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                 excel_name = 'Coronna Data CERTAIN with KVB edits.xlsx'
                 excel = pd.ExcelFile(self.library_root / excel_name)
                 df_3M = pd.read_excel(excel, 'BL+3M')
-                df_3M.to_csv(self.library_root /
-                             "Coronna_Data_CERTAIN_KVB_0M_3M.csv", index=False)
-            df_3M = pd.read_csv(self.library_root /
-                                'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
+                df_3M.to_csv(self.library_root / "Coronna_Data_CERTAIN_KVB_0M_3M.csv", index=False)
+            df_3M = pd.read_csv(self.library_root / 'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
             # Need to be added for feature engineer!
             # df_3M = df_3M.drop(columns=[''])
-            self.df_train = df_3M.sample(
-                frac=self.train_test_rate, random_state=self.random_state)
-            self.df_test = df_3M[-df_3M['UNMC_id']
-                                 .isin(self.df_train['UNMC_id'])]
+            self.df_train = df_3M.sample(frac=self.train_test_rate, random_state=self.random_state)
+            self.df_test = df_3M[-df_3M['UNMC_id'].isin(self.df_train['UNMC_id'])]
 
         elif self.process_approach == 'SC':
             if patient_group == 'KVB':
@@ -153,8 +153,8 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             # print(imputed_train['futime'].value_counts())
 
             # create dataframe by two consecutive months
-            df_train = self.create_dataframe(imputed_train, time_points, 'Train')
-            df_test = self.create_dataframe(imputed_test, time_points, 'Test')
+            df_train = self.create_dataframe(imputed_train, 'Train')
+            df_test = self.create_dataframe(imputed_test, 'Test')
             self.df_train = df_train
             self.df_test = df_test
 
@@ -200,8 +200,8 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         # drop rows that have more than 10 NaN columns
         df = df.dropna(thresh=len(df.columns)-5, axis=0)
 
-        df1 = df[df['futime'] == 0].drop(columns=['CDate'])
-        df2 = df[df['futime'] == 3].drop(columns=['CDate'])
+        df1 = df[df['futime'] == self.time_points[0]].drop(columns=['CDate'])
+        df2 = df[df['futime'] == self.time_points[1]].drop(columns=['CDate'])
         df1_test = df1.dropna(axis=0, subset=[
                               'tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
         df2_test = df2.dropna(axis=0, subset=[
@@ -213,6 +213,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             test_n, random_state=self.random_state)
         trainset = df1[~df1.index.isin(df1_test.index)]['UNMC_id']
         testset = df1[df1.index.isin(df1_test.index)]['UNMC_id']
+        
 
         return trainset, testset, df
 
@@ -271,44 +272,48 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-    def create_dataframe(self, data_file, time_points, dataset):
+    def create_dataframe(self, data_file, dataset):
         approach = 'SC'
-        time_1, time_2 = time_points
+        time_1, time_2 = self.time_points
         df1 = data_file[data_file['futime'] == time_1]
         df2 = data_file[data_file['futime'] == time_2]
 
-        # imputed_1 = self.impute_DAS_28_features(df1)
-        # imputed_2 = self.impute_DAS_28_features(df2)
-        df1.loc[:, 'DAS28_CRP'] = df1.apply(
-            lambda row: calculate_DAS28_CRP(row), axis=1).copy()
-        df2.loc[:, 'DAS28_CRP'] = df2.apply(
-            lambda row: calculate_DAS28_CRP(row), axis=1).copy()
+        df1.loc[:, 'DAS28_CRP'] = df1.apply(lambda row: calculate_DAS28_CRP(row), axis=1)
+        df2.loc[:, 'DAS28_CRP'] = df2.apply(lambda row: calculate_DAS28_CRP(row), axis=1)
         df2 = df2[['UNMC_id', 'DAS28_CRP']]
         # merge target
-        df_merged = pd.merge(df1, df2, how="left",
-                             on="UNMC_id", suffixes=("_0M", "_3M"))
+        df_merged = pd.merge(df1, df2, how="left", on="UNMC_id", suffixes=("_0M", "_3M"))
         # drop samples that can't be imputed
         df_merged = df_merged.dropna(axis=0, subset=['DAS28_CRP_3M'])
-        
-        # print(df_merged[df_merged.isna().any(axis=1)])
 
-        # create delta for regression tasks
+        # default regression tasks
         if self.challenge == "regression":
-            df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_0M'] - \
-                df_merged['DAS28_CRP_3M']
+            pass
+        # create delta for regression tasks
+        elif self.challenge == "regression_delta":
+            df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_0M'] - df_merged['DAS28_CRP_3M']
             df_merged = df_merged.drop(columns="DAS28_CRP_3M")
-        # create 3MResponse for classification tasks
+        
+        # create DrugResponse for 3-class classification tasks
         elif self.challenge == "classification":
-            df_merged.loc[:, '3MResponse'] = df_merged.apply(
-                lambda row: responseClassify(row), axis=1)
+            df_merged.loc[:, 'DrugResponse'] = df_merged.apply(lambda row: responseClassify(row), axis=1)
+            df_merged = df_merged.drop(columns="DAS28_CRP_3M")
+            # label encoder
             le = preprocessing.LabelEncoder()
-            df_merged['3MResponse'] = le.fit_transform(df_merged['3MResponse'])
+            df_merged['DrugResponse'] = le.fit_transform(df_merged['DrugResponse'])
             inverse = le.inverse_transform([0,1,2])
+            # print encoder mapping
             print(f"Label Encoder, 0:{inverse[0]}, 1:{inverse[1]}, 2:{inverse[0]}")
             
-        # create two_stage data
-        elif self.challenge == "two_stage":
-            pass
+        # create DrugResponse_binary for binary classficaition tasks
+        elif self.challenge == "binary_classification":
+            df_merged.loc[:, 'DrugResponse'] = df_merged.apply(lambda row: responseClassify(row), axis=1)
+            df_merged.loc[df_merged['DrugResponse'] == 'Good', 'DrugResponse_binary'] = 1
+            df_merged.loc[df_merged['DrugResponse'] == 'Moderate', 'DrugResponse_binary'] = 1
+            df_merged.loc[df_merged['DrugResponse'] == 'No Response', 'DrugResponse_binary'] = 0
+            df_merged = df_merged.drop(columns="DAS28_CRP_3M")
+            df_merged = df_merged.drop(columns='DrugResponse')
+            print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
 
         if self.patient_group != 'all':
             df_merged = df_merged.drop(columns='init_group')
