@@ -170,3 +170,13 @@ class AutoBuild():
             
         else:
             print("mode does not exist")
+            
+    def save_outputs(self, dataset, output='../leaderboard/'):
+        file_name_re = f"leaderboard_regression_{dataset.challenge}_{dataset.process_approach}_{dataset.imputation}_{dataset.patient_group}_{dataset.drug_group}_{dataset.train_test_rate}_{dataset.random_state}".replace(" ", "_")
+        file_name_cl = f"leaderboard_classification_{dataset.challenge}_{dataset.process_approach}_{dataset.imputation}_{dataset.patient_group}_{dataset.drug_group}_{dataset.train_test_rate}_{dataset.random_state}".replace(" ", "_")
+
+        save_path_re = pathlib.Path(output) /  file_name_re
+        save_path_cl = pathlib.Path(output) /  file_name_cl
+        
+        self.regression_leaderboard.to_csv(save_path_re,index=False)
+        self.classification_leaderboard.to_csv(save_path_cl,index=False)

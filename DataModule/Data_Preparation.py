@@ -117,16 +117,35 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         self.test_csv_loc = ''
 
         if self.process_approach == 'KVB':
-            if not (self.library_root / "Coronna_Data_CERTAIN_KVB_0M_3M.csv").is_file():
-                excel_name = 'Coronna Data CERTAIN with KVB edits.xlsx'
-                excel = pd.ExcelFile(self.library_root / excel_name)
-                df_3M = pd.read_excel(excel, 'BL+3M')
-                df_3M.to_csv(self.library_root / "Coronna_Data_CERTAIN_KVB_0M_3M.csv", index=False)
-            df_3M = pd.read_csv(self.library_root / 'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
-            # Need to be added for feature engineer!
-            # df_3M = df_3M.drop(columns=[''])
-            self.df_train = df_3M.sample(frac=self.train_test_rate, random_state=self.random_state)
-            self.df_test = df_3M[-df_3M['UNMC_id'].isin(self.df_train['UNMC_id'])]
+            # if not (self.library_root / "Coronna_Data_CERTAIN_KVB_0M_3M.csv").is_file():
+            #     excel_name = 'Coronna Data CERTAIN with KVB edits.xlsx'
+            #     excel = pd.ExcelFile(self.library_root / excel_name)
+            #     df_3M = pd.read_excel(excel, 'BL+3M')
+            #     df_3M.to_csv(self.library_root / "Coronna_Data_CERTAIN_KVB_0M_3M.csv", index=False)
+            # df_3M = pd.read_csv(self.library_root / 'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
+            # # Need to be added for feature engineer!
+            # # df_3M = df_3M.drop(columns=[''])
+            # self.df_train = df_3M.sample(frac=self.train_test_rate, random_state=self.random_state)
+            # self.df_test = df_3M[-df_3M['UNMC_id'].isin(self.df_train['UNMC_id'])]
+            df = pd.read_csv(self.library_root / "Analytical_Base_Table.csv")
+            df = df.rename(columns={'3MResponse':'DrugResponse','DAS28-CRP_BL':'DAS28_CRP_0M','DAS28-CRP 3m':'DAS28_CRP_3M'})
+            if self.challenge == "regression":
+                df.insert(len(df.columns)-1,'DAS28_CRP_3M',df.pop('DAS28_CRP_3M'))
+                df = df.drop(columns=['DrugResponse'])
+            elif self.challenge == "regression_delta":
+                df.loc[:, 'delta'] = df['DAS28_CRP_0M'] - df['DAS28_CRP_3M']
+                df = df.drop(columns=['DrugResponse','DAS28_CRP_3M'])
+            elif self.challenge == 'classification':
+                df.insert(len(df.columns)-1,'DrugResponse',df.pop('DrugResponse'))
+                df = df.drop(columns=['DAS28_CRP_3M'])
+            elif self.challenge == "binary_classification":
+                df.loc[df['DrugResponse'] == 1, 'DrugResponse_binary'] = 1
+                df.loc[df['DrugResponse'] == 0, 'DrugResponse_binary'] = 1
+                df.loc[df['DrugResponse'] == 2, 'DrugResponse_binary'] = 0
+                df = df.drop(columns=["DAS28_CRP_3M", "DrugResponse"])
+                print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
+            self.df_train = df.sample(frac=self.train_test_rate, random_state=self.random_state)
+            self.df_test = df.drop(self.df_train.index)
 
         elif self.process_approach == 'SC':
             if patient_group == 'KVB':
@@ -227,6 +246,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             label_encoder = preprocessing.LabelEncoder()
             df[col_name] = pd.Series(label_encoder.fit_transform(
                 series[series.notnull()]), index=series[series.notnull()].index)
+            df[col_name] = df[col_name].astype(int)
             encoders[col_name] = label_encoder
         # filter train and test
         train_UNMC_id = df[df['UNMC_id'].isin(train_idx)]['UNMC_id']
@@ -251,7 +271,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             imputer = IterativeImputer()
         elif self.imputation == 'IterativeSVD':
             imputer = IterativeSVD()
-            
+
         # impute train set
         print("Missing values in train before imputation:", len(train[train.isna().any(axis=1)]))
         imputed_train = imputer.fit_transform(train)
@@ -265,6 +285,11 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         imput_test_df = pd.DataFrame(imputed_test, columns=test.columns)
         imput_test_df['UNMC_id'] = test_UNMC_id.values
         print("Missing values in test after imputation:", len(imput_test_df[imput_test_df.isna().any(axis=1)]))
+        
+        for col_name in self.categorical:
+            imputed_train_df[col_name] = imputed_train_df[col_name].astype(int)
+            imput_test_df[col_name] = imput_test_df[col_name].astype(int)
+        
         return imputed_train_df, imput_test_df
 
     def check_dir(self, file_name):
@@ -311,8 +336,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df_merged.loc[df_merged['DrugResponse'] == 'Good', 'DrugResponse_binary'] = 1
             df_merged.loc[df_merged['DrugResponse'] == 'Moderate', 'DrugResponse_binary'] = 1
             df_merged.loc[df_merged['DrugResponse'] == 'No Response', 'DrugResponse_binary'] = 0
-            df_merged = df_merged.drop(columns="DAS28_CRP_3M")
-            df_merged = df_merged.drop(columns='DrugResponse')
+            df_merged = df_merged.drop(columns=["DAS28_CRP_3M","DrugResponse"])
             print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
 
         if self.patient_group != 'all':
