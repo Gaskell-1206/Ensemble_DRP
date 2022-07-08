@@ -56,6 +56,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                  drug_group: Optional[Callable] = 'all',
                  time_points: Optional[Callable] = (0, 3),
                  train_test_rate: float = 0.8,
+                 remove_low_DAS = False,
                  save_csv: bool = False,
                  random_state: Optional[Callable] = 2022,
                  ):
@@ -110,6 +111,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         self.drug_group = drug_group
         self.time_points = time_points
         self.train_test_rate = train_test_rate
+        self.remove_low_DAS = remove_low_DAS
         self.save_csv = save_csv
         self.sample_list = []
         self.random_state = random_state
@@ -117,16 +119,6 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         self.test_csv_loc = ''
 
         if self.process_approach == 'KVB':
-            # if not (self.library_root / "Coronna_Data_CERTAIN_KVB_0M_3M.csv").is_file():
-            #     excel_name = 'Coronna Data CERTAIN with KVB edits.xlsx'
-            #     excel = pd.ExcelFile(self.library_root / excel_name)
-            #     df_3M = pd.read_excel(excel, 'BL+3M')
-            #     df_3M.to_csv(self.library_root / "Coronna_Data_CERTAIN_KVB_0M_3M.csv", index=False)
-            # df_3M = pd.read_csv(self.library_root / 'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
-            # # Need to be added for feature engineer!
-            # # df_3M = df_3M.drop(columns=[''])
-            # self.df_train = df_3M.sample(frac=self.train_test_rate, random_state=self.random_state)
-            # self.df_test = df_3M[-df_3M['UNMC_id'].isin(self.df_train['UNMC_id'])]
             df = pd.read_csv(self.library_root / "Analytical_Base_Table.csv")
             df = df.rename(columns={'3MResponse':'DrugResponse','DAS28-CRP_BL':'DAS28_CRP_0M','DAS28-CRP 3m':'DAS28_CRP_3M'})
             if self.challenge == "regression":
@@ -158,22 +150,26 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df = self.transform_time_series_data(df)
 
             # train test split (only split rows without NaN in features used to calculate DAS-28CRP into testset)
-            train_idx, test_idx, df = self.split_data(df)
+            self.train_idx, self.test_idx, df = self.split_data(df)
+            
+            # feature engineering
+            df = self.feature_engineering(df)
             
             # Imputation
             if self.imputation == None:
                 # return raw
-                imputed_train = df[df['UNMC_id'].isin(train_idx)]
-                imputed_test = df[df['UNMC_id'].isin(test_idx)]
+                imputed_train = df[df['UNMC_id'].isin(self.train_idx)]
+                imputed_test = df[df['UNMC_id'].isin(self.test_idx)]
                 
             else:
-                imputed_train, imputed_test = self.Apply_imputation(df, train_idx, test_idx)
+                imputed_train, imputed_test = self.Apply_imputation(df)
                 
             # print(imputed_train['futime'].value_counts())
 
             # create dataframe by two consecutive months
             df_train = self.create_dataframe(imputed_train, 'Train')
             df_test = self.create_dataframe(imputed_test, 'Test')
+            
             self.df_train = df_train
             self.df_test = df_test
 
@@ -207,39 +203,38 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             return row['pt_global_assess']
 
     def split_data(self, df):
-        if self.patient_group != 'all':
+        # data filter
+        if (self.patient_group != 'all') & (self.patient_group != 'KVB'):
             df = df[df['init_group'] == self.patient_group]
         if len(self.sample_list) > 0:
+            print(self.sample_list)
             df = df[df['UNMC_id'].isin(self.sample_list)]
             
+        # drop rows that have more than 10 NaN columns
+        df = df.dropna(thresh=len(df.columns)-10, axis=0)
+
+        df1 = df[df['futime'] == self.time_points[0]].drop(columns=['CDate'])
+        df2 = df[df['futime'] == self.time_points[1]].drop(columns=['CDate'])
+        
+        df1_test = df1.dropna(axis=0, subset=['tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
+        df2_test = df2.dropna(axis=0, subset=['tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
+        # only put rows without NaN values in features for DAS-28 (3M) into test set
+        overlap_index = df1_test.index.intersection(df2_test.index-1)
+        test_n = int((1-self.train_test_rate) * len(df1))
+        df1_test = df1_test.loc[overlap_index].sample(test_n, random_state=self.random_state)
+        trainset = df1[~df1.index.isin(df1_test.index)]['UNMC_id']
+        testset = df1[df1.index.isin(df1_test.index)]['UNMC_id']
+        
+        return trainset, testset, df
+    
+    def feature_engineering(self, df):
         # drop columns
         columns_drop = df.isnull().mean()[df.isnull().mean() > 0.7].index
         print("feature engineering, drop columns due to 70% missing value:",columns_drop)
         df = df.drop(columns=list(columns_drop))
-        # drop rows that have more than 10 NaN columns
-        df = df.dropna(thresh=len(df.columns)-5, axis=0)
-
-        df1 = df[df['futime'] == self.time_points[0]].drop(columns=['CDate'])
-        df2 = df[df['futime'] == self.time_points[1]].drop(columns=['CDate'])
-        df1_test = df1.dropna(axis=0, subset=[
-                              'tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
-        df2_test = df2.dropna(axis=0, subset=[
-                              'tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
-        # only put rows without NaN values in features for DAS-28 (3M) into test set
-        overlap_index = df1_test.index.intersection(df2_test.index-1)
-        test_n = int((1-self.train_test_rate) * len(df1))
-        df1_test = df1_test.loc[overlap_index].sample(
-            test_n, random_state=self.random_state)
-        trainset = df1[~df1.index.isin(df1_test.index)]['UNMC_id']
-        testset = df1[df1.index.isin(df1_test.index)]['UNMC_id']
+        df = df.drop(columns=['CDate']) # useless
         
-
-        return trainset, testset, df
-
-    def Apply_imputation(self, df, train_idx, test_idx):
-        # use md to impute pt NaN
-        df['pt_global_assess'] = df.apply(lambda row: self.impute_pt_global_assess(row), axis=1)
-        # tranform categorical features
+        # labelEncoder, tranform categorical features
         encoders = dict()
         for col_name in self.categorical:
             series = df[col_name].astype('str')
@@ -248,29 +243,34 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                 series[series.notnull()]), index=series[series.notnull()].index)
             df[col_name] = df[col_name].astype(int)
             encoders[col_name] = label_encoder
+        
+        return df
+
+    def Apply_imputation(self,df):
+        # use md to impute pt NaN
+        # df['pt_global_assess'] = df.apply(lambda row: self.impute_pt_global_assess(row), axis=1)
+
         # filter train and test
-        train_UNMC_id = df[df['UNMC_id'].isin(train_idx)]['UNMC_id']
-        test_UNMC_id = df[df['UNMC_id'].isin(test_idx)]['UNMC_id']
-        train = df[df['UNMC_id'].isin(train_idx)].drop(
-            columns=['UNMC_id', 'CDate'])
-        test = df[df['UNMC_id'].isin(test_idx)].drop(
-            columns=['UNMC_id', 'CDate'])
+        train_UNMC_id = df[df['UNMC_id'].isin(self.train_idx)]['UNMC_id']
+        test_UNMC_id = df[df['UNMC_id'].isin(self.test_idx)]['UNMC_id']
+        train = df[df['UNMC_id'].isin(self.train_idx)].drop(columns=['UNMC_id'])
+        test = df[df['UNMC_id'].isin(self.test_idx)].drop(columns=['UNMC_id'])
         
         # imputation
         if self.imputation == 'SimpleFill':
             imputer = SimpleFill()
         elif self.imputation == 'KNN':
             imputer = KNN(k=15,verbose=False)
+        elif self.imputation == 'SoftImpute':
+            imputer = SoftImpute(verbose=False)
         elif self.imputation == 'NuclearNormMinimization':
             imputer = NuclearNormMinimization()
         elif self.imputation == 'BiScaler':
-            imputer = BiScaler()
-        elif self.imputation == 'SoftImpute':
-            imputer = SoftImpute()
+            imputer = BiScaler(verbose=False)
         elif self.imputation == 'IterativeImputer':
-            imputer = IterativeImputer()
+            imputer = IterativeImputer(verbose=False)
         elif self.imputation == 'IterativeSVD':
-            imputer = IterativeSVD()
+            imputer = IterativeSVD(verbose=False)
 
         # impute train set
         print("Missing values in train before imputation:", len(train[train.isna().any(axis=1)]))
@@ -306,6 +306,11 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         df1.loc[:, 'DAS28_CRP'] = df1.apply(lambda row: calculate_DAS28_CRP(row), axis=1)
         df2.loc[:, 'DAS28_CRP'] = df2.apply(lambda row: calculate_DAS28_CRP(row), axis=1)
         df2 = df2[['UNMC_id', 'DAS28_CRP']]
+        
+        # remove baseline DAS28 < 3.2
+        if self.remove_low_DAS:
+            df1 = df1[df1['DAS28_CRP'] > 3.2]
+        
         # merge target
         df_merged = pd.merge(df1, df2, how="left", on="UNMC_id", suffixes=("_0M", "_3M"))
         # drop samples that can't be imputed
