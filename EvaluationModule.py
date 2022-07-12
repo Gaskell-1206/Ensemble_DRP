@@ -354,7 +354,7 @@ class AutoBuild():
                         rows["model"], rows["MAE"], rows["MSE"], rows["RMSE"], rows["R2"], rows["Pearson_Correlation"], rows["Accuracy"], rows["F1-Score"]]
                 # write the data
                 writer.writerow(data)
-                
+
     def test_output(self, dataset, output='../leaderboard/'):
         test = self.test
         path = os.path.join(output, f'{self.project_name}_output.csv')
@@ -388,7 +388,19 @@ class AutoBuild():
                         rows["model"], rows["MAE"], rows["MSE"], rows["RMSE"], rows["R2"], rows["Pearson_Correlation"], rows["Accuracy"], rows["F1-Score"]]
                 # write the data
                 writer.writerow(data)            
-        
+    def validation_ressults(self, ressults='../leaderboard/'):
+        path = os.path.join(ressults, f'{self.project_name}_output.csv')
+        return pd.read_csv(path)
+    def average_validation(self,ressults='../leaderboard/'):
+        df=self.validation_ressults(ressults)
+        df=df.drop([0],axis=0)
+        cols=df.columns[-7:]
+        import pandas as pd
+        df.columns
+        df[cols]=df[cols].apply(pd.to_numeric, errors='coerce')
+        return df.groupby(['model_id','dataset', 'challenge', 'process_approach', 'imputation',
+            'patient_group', 'drug_group', 'train_test_rate', 'remove_low_DAS',
+            'random_state']).mean()
 
     # def save_output(self, dataset, output='../leaderboard/'):
     #     # regression
