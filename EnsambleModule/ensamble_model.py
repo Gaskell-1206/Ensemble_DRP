@@ -3,6 +3,7 @@ import sklearn as sk
 from sklearn import neural_network
 from sklearn import naive_bayes
 from sklearn import ensemble
+from sklearn import tree 
 import xgboost as xgb
 class make_ensamble: 
     def __init__(self, model_list, ensamble_type='Stacking', meta_learner=None, meta_learner_params=None, hyper_parameters=None, challange="Regression"):
@@ -14,10 +15,10 @@ class make_ensamble:
         if is_dict_like(hyper_parameters)==False and hyper_parameters!=None:
             raise ValueError("hyper_parameters must be dict like")
         for model in model_list:
-            if model not in ('KNN', "Bayes", 'Logistic', 'Linear', 'Ridge', 'Lasso', "SVM", "Bayes", 'ANN','XGBoost','Random Forest'):
-                raise ValueError("model must be ", 'KNN', "Bayes", 'Logistic', 'Linear', 'Ridge', 'Lasso', "SVM", "Bayes", 'ANN','XGBoost','Random Forest' )
-        if meta_learner not in ( 'KNN', "Bayes", 'Logistic', 'Linear', 'Ridge', 'Lasso', "SVM", "Bayes",'ANN','XGBoost','Random Forest', None ):
-            raise ValueError("meta_learner must be ", 'KNN', "Bayes", 'Logistic', 'Linear', 'Ridge', 'Lasso','ANN', "SVM", "Bayes",'XGBoost','Random Forest')
+            if model not in ('KNN', "Bayes", 'Logistic', 'Linear', 'Ridge', 'Lasso', "SVM", "Bayes", 'ANN','XGBoost','Random Forest', 'Tree'):
+                raise ValueError("model must be ", 'KNN', "Bayes", 'Logistic', 'Linear', 'Ridge', 'Lasso', "SVM", "Bayes", 'ANN','XGBoost','Random Forest','Tree' )
+        if meta_learner not in ( 'KNN', "Bayes", 'Logistic', 'Linear', 'Ridge', 'Lasso', "SVM", "Bayes",'ANN','XGBoost','Random Forest','Tree', None ):
+            raise ValueError("meta_learner must be ", 'KNN', "Bayes", 'Logistic', 'Linear', 'Ridge', 'Lasso','ANN', "SVM", "Bayes",'XGBoost','Random Forest','Tree')
         if ensamble_type not in ('Stacking', 'Bagging', 'Boosting'):
             raise ValueError("ensamble_type must be in ", 'Stacking', 'Bagging', 'Boosting')
         if len(model_list)!=1 and ensamble_type in ( 'Bagging', 'Boosting'):
@@ -47,6 +48,7 @@ class make_ensamble:
             models['Lasso'] = sk.linear_model.Lasso() 
             models['SVM'] = sk.svm.SVR()
             models['Random Forest']=ensemble.RandomForestRegressor()
+            models['Tree']=tree.DecisionTreeRegressor()
             models['XGBoost']=xgb.XGBRegressor()
         else: 
             models['Bayes'] = naive_bayes.GaussianNB ()
@@ -56,6 +58,7 @@ class make_ensamble:
             models['SVM'] = sk.svm.SVC()
             models['Random Forest']=ensemble.RandomForestClassifier()
             models['XGBoost']=xgb.XGBClassifier()
+            models['Tree']=tree.DecisionTreeClassifier()
 
 
 
@@ -92,6 +95,10 @@ class make_ensamble:
                     self.model=ensemble.StackingClassifier(estimators=self.estemators,final_estimator=temp,**self.hyper_parameters)
                 else:
                     self.model=ensemble.StackingClassifier(estimators=self.estemators,**self.hyper_parameters)
+        self.models=b={self.estemators[i][0]:self.estemators[i][1] for i in range(len(self.estemators))}
+        self.models["Ensamble"]=self.model
+
+
 
 ''''
 todo: 
