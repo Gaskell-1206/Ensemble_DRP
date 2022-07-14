@@ -56,6 +56,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                  drug_group: Optional[Callable] = 'all',
                  time_points: Optional[Callable] = (0, 3),
                  train_test_rate: float = 0.8,
+                 remove_low_DAS = False,
                  save_csv: bool = False,
                  random_state: Optional[Callable] = 2022,
                  ):
@@ -63,7 +64,10 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
 
         Args:
             library_root: Path to the root director of library file
-            challenge: regression(DAS-28CRP), classification(3MResponse), two_stage(both)
+            challenge: regression (numerical, DAS-28CRP value),
+                       regression_delta (numerical, changes of DAS-28CRP)
+                       classification (categorical: Good, Moderate, No Response)
+                       binary_classification (categorical: Responder, Non-responders)
             dataset: Dataset used for modeling ("CORRONA CERTAIN")
             process_approach: Dataset process approach. (KVB - from previous student ) (SC)
             imputation: imputation methods
@@ -72,9 +76,9 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             train_test_rate: sample rate for train and test set
             save_csv: If True, dataframe will be saved in "../Dataset/Coronna_Data_CERTAIN_{approach}_{time_1}M_{time_2}M_{subset}_{dataset}.csv"
         """
-        if challenge not in ("regression", "classification", "two_stage"):
+        if challenge not in ("regression", "regression_delta", "classification", "binary_classification"):
             raise ValueError(
-                'challenge should be either "regression", "classification" or "two_stage"')
+                'challenge should be either "regression", "regression_delta", "classification", or "binary_classification"')
         if process_approach not in ("KVB", "SC"):
             raise ValueError('process_approach should be either "KVB" or "SC"')
         if patient_group not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
@@ -105,7 +109,9 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         self.imputation = imputation
         self.patient_group = patient_group
         self.drug_group = drug_group
+        self.time_points = time_points
         self.train_test_rate = train_test_rate
+        self.remove_low_DAS = remove_low_DAS
         self.save_csv = save_csv
         self.sample_list = []
         self.random_state = random_state
@@ -113,20 +119,25 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         self.test_csv_loc = ''
 
         if self.process_approach == 'KVB':
-            if not (self.library_root / "Coronna_Data_CERTAIN_KVB_0M_3M.csv").is_file():
-                excel_name = 'Coronna Data CERTAIN with KVB edits.xlsx'
-                excel = pd.ExcelFile(self.library_root / excel_name)
-                df_3M = pd.read_excel(excel, 'BL+3M')
-                df_3M.to_csv(self.library_root /
-                             "Coronna_Data_CERTAIN_KVB_0M_3M.csv", index=False)
-            df_3M = pd.read_csv(self.library_root /
-                                'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
-            # Need to be added for feature engineer!
-            # df_3M = df_3M.drop(columns=[''])
-            self.df_train = df_3M.sample(
-                frac=self.train_test_rate, random_state=self.random_state)
-            self.df_test = df_3M[-df_3M['UNMC_id']
-                                 .isin(self.df_train['UNMC_id'])]
+            df = pd.read_csv(self.library_root / "Analytical_Base_Table.csv")
+            df = df.rename(columns={'3MResponse':'DrugResponse','DAS28-CRP_BL':'DAS28_CRP_0M','DAS28-CRP 3m':'DAS28_CRP_3M'})
+            if self.challenge == "regression":
+                df.insert(len(df.columns)-1,'DAS28_CRP_3M',df.pop('DAS28_CRP_3M'))
+                df = df.drop(columns=['DrugResponse'])
+            elif self.challenge == "regression_delta":
+                df.loc[:, 'delta'] = df['DAS28_CRP_0M'] - df['DAS28_CRP_3M']
+                df = df.drop(columns=['DrugResponse','DAS28_CRP_3M'])
+            elif self.challenge == 'classification':
+                df.insert(len(df.columns)-1,'DrugResponse',df.pop('DrugResponse'))
+                df = df.drop(columns=['DAS28_CRP_3M'])
+            elif self.challenge == "binary_classification":
+                df.loc[df['DrugResponse'] == 1, 'DrugResponse_binary'] = 1
+                df.loc[df['DrugResponse'] == 0, 'DrugResponse_binary'] = 1
+                df.loc[df['DrugResponse'] == 2, 'DrugResponse_binary'] = 0
+                df = df.drop(columns=["DAS28_CRP_3M", "DrugResponse"])
+                print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
+            self.df_train = df.sample(frac=self.train_test_rate, random_state=self.random_state)
+            self.df_test = df.drop(self.df_train.index)
 
         elif self.process_approach == 'SC':
             if patient_group == 'KVB':
@@ -139,22 +150,26 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df = self.transform_time_series_data(df)
 
             # train test split (only split rows without NaN in features used to calculate DAS-28CRP into testset)
-            train_idx, test_idx, df = self.split_data(df)
+            self.train_idx, self.test_idx, df = self.split_data(df)
+            
+            # feature engineering
+            df = self.feature_engineering(df)
             
             # Imputation
             if self.imputation == None:
                 # return raw
-                imputed_train = df[df['UNMC_id'].isin(train_idx)]
-                imputed_test = df[df['UNMC_id'].isin(test_idx)]
+                imputed_train = df[df['UNMC_id'].isin(self.train_idx)]
+                imputed_test = df[df['UNMC_id'].isin(self.test_idx)]
                 
             else:
-                imputed_train, imputed_test = self.Apply_imputation(df, train_idx, test_idx)
+                imputed_train, imputed_test = self.Apply_imputation(df)
                 
             # print(imputed_train['futime'].value_counts())
 
             # create dataframe by two consecutive months
-            df_train = self.create_dataframe(imputed_train, time_points, 'Train')
-            df_test = self.create_dataframe(imputed_test, time_points, 'Test')
+            df_train = self.create_dataframe(imputed_train, 'Train')
+            df_test = self.create_dataframe(imputed_test, 'Test')
+            
             self.df_train = df_train
             self.df_test = df_test
 
@@ -188,153 +203,146 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             return row['pt_global_assess']
 
     def split_data(self, df):
-        if self.patient_group != 'all':
+        # data filter
+        if (self.patient_group != 'all') & (self.patient_group != 'KVB'):
             df = df[df['init_group'] == self.patient_group]
         if len(self.sample_list) > 0:
+            print(self.sample_list)
             df = df[df['UNMC_id'].isin(self.sample_list)]
             
+        # drop rows that have more than 10 NaN columns
+        df = df.dropna(thresh=len(df.columns)-10, axis=0)
+
+        df1 = df[df['futime'] == self.time_points[0]].drop(columns=['CDate'])
+        df2 = df[df['futime'] == self.time_points[1]].drop(columns=['CDate'])
+        
+        df1_test = df1.dropna(axis=0, subset=['tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
+        df2_test = df2.dropna(axis=0, subset=['tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
+        # only put rows without NaN values in features for DAS-28 (3M) into test set
+        overlap_index = df1_test.index.intersection(df2_test.index-1)
+        test_n = int((1-self.train_test_rate) * len(df1))
+        df1_test = df1_test.loc[overlap_index].sample(test_n, random_state=self.random_state)
+        trainset = df1[~df1.index.isin(df1_test.index)]['UNMC_id']
+        testset = df1[df1.index.isin(df1_test.index)]['UNMC_id']
+        
+        return trainset, testset, df
+    
+    def feature_engineering(self, df):
         # drop columns
         columns_drop = df.isnull().mean()[df.isnull().mean() > 0.7].index
         print("feature engineering, drop columns due to 70% missing value:",columns_drop)
         df = df.drop(columns=list(columns_drop))
-        # drop rows that have more than 10 NaN columns
-        df = df.dropna(thresh=len(df.columns)-5, axis=0)
-
-        df1 = df[df['futime'] == 0].drop(columns=['CDate'])
-        df2 = df[df['futime'] == 3].drop(columns=['CDate'])
-        df1_test = df1.dropna(axis=0, subset=[
-                              'tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
-        df2_test = df2.dropna(axis=0, subset=[
-                              'tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'])
-        # only put rows without NaN values in features for DAS-28 (3M) into test set
-        overlap_index = df1_test.index.intersection(df2_test.index-1)
-        test_n = int((1-self.train_test_rate) * len(df1))
-        df1_test = df1_test.loc[overlap_index].sample(
-            test_n, random_state=self.random_state)
-        trainset = df1[~df1.index.isin(df1_test.index)]['UNMC_id']
-        testset = df1[df1.index.isin(df1_test.index)]['UNMC_id']
-
-        return trainset, testset, df
-
-    def Apply_imputation(self, df, train_idx, test_idx):
-        # use md to impute pt NaN
-        df['pt_global_assess'] = df.apply(lambda row: self.impute_pt_global_assess(row), axis=1)
-        # tranform categorical features
+        df = df.drop(columns=['CDate']) # useless
+        
+        # labelEncoder, tranform categorical features
         encoders = dict()
         for col_name in self.categorical:
             series = df[col_name].astype('str')
             label_encoder = preprocessing.LabelEncoder()
             df[col_name] = pd.Series(label_encoder.fit_transform(
                 series[series.notnull()]), index=series[series.notnull()].index)
+            df[col_name] = df[col_name].astype(int)
             encoders[col_name] = label_encoder
+        
+        return df
+
+    def Apply_imputation(self,df):
+        # use md to impute pt NaN
+        # df['pt_global_assess'] = df.apply(lambda row: self.impute_pt_global_assess(row), axis=1)
+
         # filter train and test
-        train_UNMC_id = df[df['UNMC_id'].isin(train_idx)]['UNMC_id']
-        test_UNMC_id = df[df['UNMC_id'].isin(test_idx)]['UNMC_id']
-        train = df[df['UNMC_id'].isin(train_idx)].drop(
-            columns=['UNMC_id', 'CDate'])
-        test = df[df['UNMC_id'].isin(test_idx)].drop(
-            columns=['UNMC_id', 'CDate'])
+        train_UNMC_id = df[df['UNMC_id'].isin(self.train_idx)]['UNMC_id']
+        test_UNMC_id = df[df['UNMC_id'].isin(self.test_idx)]['UNMC_id']
+        train = df[df['UNMC_id'].isin(self.train_idx)].drop(columns=['UNMC_id'])
+        test = df[df['UNMC_id'].isin(self.test_idx)].drop(columns=['UNMC_id'])
         
         # imputation
         if self.imputation == 'SimpleFill':
             imputer = SimpleFill()
         elif self.imputation == 'KNN':
-            imputer = KNN(k=15)
+            imputer = KNN(k=15,verbose=False)
+        elif self.imputation == 'SoftImpute':
+            imputer = SoftImpute(verbose=False)
         elif self.imputation == 'NuclearNormMinimization':
             imputer = NuclearNormMinimization()
         elif self.imputation == 'BiScaler':
-            imputer = BiScaler()
-        elif self.imputation == 'SoftImpute':
-            imputer = SoftImpute()
+            imputer = BiScaler(verbose=False)
         elif self.imputation == 'IterativeImputer':
-            imputer = IterativeImputer()
+            imputer = IterativeImputer(verbose=False)
         elif self.imputation == 'IterativeSVD':
-            imputer = IterativeSVD()
-            
+            imputer = IterativeSVD(verbose=False)
+
         # impute train set
+        print("Missing values in train before imputation:", len(train[train.isna().any(axis=1)]))
         imputed_train = imputer.fit_transform(train)
         imputed_train_df = pd.DataFrame(imputed_train, columns=train.columns)
         imputed_train_df['UNMC_id'] = train_UNMC_id.values
-        # print("NaN in train:",imputed_train_df[imputed_train_df.isna().any(axis=1)])
+        print("Missing values in train after imputation:", len(imputed_train_df[imputed_train_df.isna().any(axis=1)]))
+        
         # impute test set
+        print("Missing values in test before imputation:", len(test[test.isna().any(axis=1)]))
         imputed_test = imputer.fit_transform(test)
         imput_test_df = pd.DataFrame(imputed_test, columns=test.columns)
         imput_test_df['UNMC_id'] = test_UNMC_id.values
-        # print("imputed_train_df:", imputed_train_df)
-        # print("imput_test_df:", imput_test_df)
+        print("Missing values in test after imputation:", len(imput_test_df[imput_test_df.isna().any(axis=1)]))
+        
+        for col_name in self.categorical:
+            imputed_train_df[col_name] = imputed_train_df[col_name].astype(int)
+            imput_test_df[col_name] = imput_test_df[col_name].astype(int)
+        
         return imputed_train_df, imput_test_df
-
-    # def impute_DAS_28_features(self, df_to_impute):
-    #     # impute pt_global_assess
-    #     df_to_impute['pt_global_assess'] = df_to_impute.apply(
-    #         lambda row: self.impute_pt_global_assess(row), axis=1)
-    #     # drop NaN in feautres used for calculating DAS-28
-    #     df_to_impute = df_to_impute.dropna(axis=0, subset=[
-    #                                        'tender_jts_28', 'swollen_jts_28', 'pt_global_assess', 'usresultsCRP'], thresh=3)
-    #     # impute 'tender_jts_28','swollen_jts_28','usresultsCRP' if only one missing
-    #     df_for_imputation = df_to_impute.drop(columns=['UNMC_id'])
-
-    #     # tranform categorical features
-    #     encoders = dict()
-    #     for col_name in self.categorical:
-    #         series = df_for_imputation[col_name]
-    #         label_encoder = preprocessing.LabelEncoder()
-    #         df_for_imputation[col_name] = pd.Series(label_encoder.fit_transform(
-    #             series[series.notnull()]), index=series[series.notnull()].index)
-    #         encoders[col_name] = label_encoder
-    #     df_for_imputation = df_for_imputation.reset_index(
-    #         drop=True, inplace=True)
-
-    #     imputer = KNNImputer(n_neighbors=50, weights="uniform")
-    #     df_temp = pd.DataFrame(imputer.fit_transform(df_for_imputation))
-    #     df_temp.columns = df_for_imputation.columns
-    #     df_to_impute['tender_jts_28'] = df_temp['tender_jts_28']
-    #     df_to_impute['swollen_jts_28'] = df_temp['swollen_jts_28']
-    #     df_to_impute['pt_global_assess'] = df_temp['pt_global_assess']
-    #     df_to_impute['usresultsCRP'] = df_temp['usresultsCRP']
-    #     df_to_impute['DAS28_CRP'] = df_to_impute.apply(
-    #         lambda row: calculate_DAS28_CRP(row), axis=1)
-
-    #     return df_to_impute
 
     def check_dir(self, file_name):
         directory = os.path.dirname(file_name)
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-    def create_dataframe(self, data_file, time_points, dataset):
+    def create_dataframe(self, data_file, dataset):
         approach = 'SC'
-        time_1, time_2 = time_points
+        time_1, time_2 = self.time_points
         df1 = data_file[data_file['futime'] == time_1]
         df2 = data_file[data_file['futime'] == time_2]
 
-        # imputed_1 = self.impute_DAS_28_features(df1)
-        # imputed_2 = self.impute_DAS_28_features(df2)
-        df1.loc[:, 'DAS28_CRP'] = df1.apply(
-            lambda row: calculate_DAS28_CRP(row), axis=1).copy()
-        df2.loc[:, 'DAS28_CRP'] = df2.apply(
-            lambda row: calculate_DAS28_CRP(row), axis=1).copy()
+        df1.loc[:, 'DAS28_CRP'] = df1.apply(lambda row: calculate_DAS28_CRP(row), axis=1)
+        df2.loc[:, 'DAS28_CRP'] = df2.apply(lambda row: calculate_DAS28_CRP(row), axis=1)
         df2 = df2[['UNMC_id', 'DAS28_CRP']]
+        
+        # remove baseline DAS28 < 3.2
+        if self.remove_low_DAS:
+            df1 = df1[df1['DAS28_CRP'] > 3.2]
+        
         # merge target
-        df_merged = pd.merge(df1, df2, how="left",
-                             on="UNMC_id", suffixes=("_0M", "_3M"))
+        df_merged = pd.merge(df1, df2, how="left", on="UNMC_id", suffixes=("_0M", "_3M"))
         # drop samples that can't be imputed
         df_merged = df_merged.dropna(axis=0, subset=['DAS28_CRP_3M'])
-        
-        # print(df_merged[df_merged.isna().any(axis=1)])
 
-        # create delta for regression tasks
+        # default regression tasks
         if self.challenge == "regression":
-            df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_0M'] - \
-                df_merged['DAS28_CRP_3M']
-            df_merged = df_merged.drop(columns="DAS28_CRP_3M")
-        # create 3MResponse for classification tasks
-        elif self.challenge == "classification":
-            df_merged.loc[:, '3MResponse'] = df_merged.apply(
-                lambda row: responseClassify(row), axis=1)
-        # create two_stage data
-        elif self.challenge == "two_stage":
             pass
+        # create delta for regression tasks
+        elif self.challenge == "regression_delta":
+            df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_0M'] - df_merged['DAS28_CRP_3M']
+            df_merged = df_merged.drop(columns="DAS28_CRP_3M")
+        
+        # create DrugResponse for 3-class classification tasks
+        elif self.challenge == "classification":
+            df_merged.loc[:, 'DrugResponse'] = df_merged.apply(lambda row: responseClassify(row), axis=1)
+            df_merged = df_merged.drop(columns="DAS28_CRP_3M")
+            # label encoder
+            le = preprocessing.LabelEncoder()
+            df_merged['DrugResponse'] = le.fit_transform(df_merged['DrugResponse'])
+            inverse = le.inverse_transform([0,1,2])
+            # print encoder mapping
+            print(f"Label Encoder, 0:{inverse[0]}, 1:{inverse[1]}, 2:{inverse[0]}")
+            
+        # create DrugResponse_binary for binary classficaition tasks
+        elif self.challenge == "binary_classification":
+            df_merged.loc[:, 'DrugResponse'] = df_merged.apply(lambda row: responseClassify(row), axis=1)
+            df_merged.loc[df_merged['DrugResponse'] == 'Good', 'DrugResponse_binary'] = 1
+            df_merged.loc[df_merged['DrugResponse'] == 'Moderate', 'DrugResponse_binary'] = 1
+            df_merged.loc[df_merged['DrugResponse'] == 'No Response', 'DrugResponse_binary'] = 0
+            df_merged = df_merged.drop(columns=["DAS28_CRP_3M","DrugResponse"])
+            print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
 
         if self.patient_group != 'all':
             df_merged = df_merged.drop(columns='init_group')
