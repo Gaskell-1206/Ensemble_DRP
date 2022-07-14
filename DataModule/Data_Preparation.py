@@ -3,7 +3,8 @@ import os
 import sys
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
-
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import RandomUnderSampler
 import numpy as np
 import pandas as pd
 import torch
@@ -58,7 +59,9 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                  train_test_rate: float = 0.8,
                  remove_low_DAS = False,
                  save_csv: bool = False,
+                 balance_class: bool = False,
                  random_state: Optional[Callable] = 2022,
+                 verbose: int = 0,
                  ):
         """Initializes instance of class CoronnaCERTAINDataset.
 
@@ -76,9 +79,9 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             train_test_rate: sample rate for train and test set
             save_csv: If True, dataframe will be saved in "../Dataset/Coronna_Data_CERTAIN_{approach}_{time_1}M_{time_2}M_{subset}_{dataset}.csv"
         """
-        if challenge not in ("regression", "regression_delta", "classification", "binary_classification"):
+        if challenge not in ("regression", "regression_delta", "regression_delta_binary", "classification", "binary_classification"):
             raise ValueError(
-                'challenge should be either "regression", "regression_delta", "classification", or "binary_classification"')
+                'challenge should be either "regression", "regression_delta", "regression_delta_binary", "classification", or "binary_classification"')
         if process_approach not in ("KVB", "SC"):
             raise ValueError('process_approach should be either "KVB" or "SC"')
         if patient_group not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
@@ -117,6 +120,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         self.random_state = random_state
         self.train_csv_loc = ''
         self.test_csv_loc = ''
+        self.verbose = verbose
 
         if self.process_approach == 'KVB':
             df = pd.read_csv(self.library_root / "Analytical_Base_Table.csv")
@@ -124,7 +128,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             if self.challenge == "regression":
                 df.insert(len(df.columns)-1,'DAS28_CRP_3M',df.pop('DAS28_CRP_3M'))
                 df = df.drop(columns=['DrugResponse'])
-            elif self.challenge == "regression_delta":
+            elif self.challenge == "regression_delta" or self.challenge == "regression_delta_binary":
                 df.loc[:, 'delta'] = df['DAS28_CRP_0M'] - df['DAS28_CRP_3M']
                 df = df.drop(columns=['DrugResponse','DAS28_CRP_3M'])
             elif self.challenge == 'classification':
@@ -135,7 +139,8 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                 df.loc[df['DrugResponse'] == 0, 'DrugResponse_binary'] = 1
                 df.loc[df['DrugResponse'] == 2, 'DrugResponse_binary'] = 0
                 df = df.drop(columns=["DAS28_CRP_3M", "DrugResponse"])
-                print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
+                if self.verbose > 0:
+                    print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
             self.df_train = df.sample(frac=self.train_test_rate, random_state=self.random_state)
             self.df_test = df.drop(self.df_train.index)
 
@@ -170,6 +175,40 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df_train = self.create_dataframe(imputed_train, 'Train')
             df_test = self.create_dataframe(imputed_test, 'Test')
             
+            # if balance_class:
+            #     X = df_train.iloc[:,:-1]
+            #     y = df_train.iloc[:,-1]
+            #     target_name = df_train.columns[-1]
+            #     if self.verbose > 0:
+            #         print("before balance class:", df_train[target_name].value_counts())
+            #     # define pipeline
+            #     oversample = SMOTE(sampling_strategy=0.8)
+            #     undersample = RandomUnderSampler(sampling_strategy=0.9)
+            #     # transform the dataset
+            #     X, y = oversample.fit_resample(X, y)
+            #     X, y = undersample.fit_resample(X, y)
+            #     df_train = X
+            #     df_train[target_name] = y
+            #     if self.verbose > 0:
+            #         print("after balance class:", df_train[target_name].value_counts())
+                
+            self.save_to_csv(df_train, "Train")
+            self.save_to_csv(df_test, "Test")
+            
+            if self.save_csv:
+                file_loc = os.path.join(
+                    self.library_root, 'tableau_data', f'Coronna_Data_CERTAIN_{self.challenge}_{self.process_approach}_{self.time_points[0]}M_{self.time_points[1]}M_{self.patient_group}_{self.drug_group}_{str(balance_class)}', f'{dataset}.csv')
+                file_loc = file_loc.replace(' ', '_') # avoid spacing
+                self.check_dir(file_loc)
+                if self.verbose > 0:
+                    print("save file to:", file_loc)
+                df_train_save = df_train
+                df_train_save['dataset'] = 'Train'
+                df_test_save = df_test
+                df_test_save['dataset'] = 'Test'
+                df = pd.concat([df_train_save, df_test_save])
+                df.to_csv(file_loc, index=False)
+                
             self.df_train = df_train
             self.df_test = df_test
 
@@ -207,7 +246,8 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         if (self.patient_group != 'all') & (self.patient_group != 'KVB'):
             df = df[df['init_group'] == self.patient_group]
         if len(self.sample_list) > 0:
-            print(self.sample_list)
+            if self.verbose > 0:
+                print(self.sample_list)
             df = df[df['UNMC_id'].isin(self.sample_list)]
             
         # drop rows that have more than 10 NaN columns
@@ -230,7 +270,8 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
     def feature_engineering(self, df):
         # drop columns
         columns_drop = df.isnull().mean()[df.isnull().mean() > 0.7].index
-        print("feature engineering, drop columns due to 70% missing value:",columns_drop)
+        if self.verbose > 0:
+            print("feature engineering, drop columns due to 70% missing value:",columns_drop)
         df = df.drop(columns=list(columns_drop))
         df = df.drop(columns=['CDate']) # useless
         
@@ -273,18 +314,22 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             imputer = IterativeSVD(verbose=False)
 
         # impute train set
-        print("Missing values in train before imputation:", len(train[train.isna().any(axis=1)]))
+        if self.verbose > 0:
+            print("Missing values in train before imputation:", len(train[train.isna().any(axis=1)]))
         imputed_train = imputer.fit_transform(train)
         imputed_train_df = pd.DataFrame(imputed_train, columns=train.columns)
         imputed_train_df['UNMC_id'] = train_UNMC_id.values
-        print("Missing values in train after imputation:", len(imputed_train_df[imputed_train_df.isna().any(axis=1)]))
+        if self.verbose > 0:
+            print("Missing values in train after imputation:", len(imputed_train_df[imputed_train_df.isna().any(axis=1)]))
         
         # impute test set
-        print("Missing values in test before imputation:", len(test[test.isna().any(axis=1)]))
+        if self.verbose > 0:
+            print("Missing values in test before imputation:", len(test[test.isna().any(axis=1)]))
         imputed_test = imputer.fit_transform(test)
         imput_test_df = pd.DataFrame(imputed_test, columns=test.columns)
         imput_test_df['UNMC_id'] = test_UNMC_id.values
-        print("Missing values in test after imputation:", len(imput_test_df[imput_test_df.isna().any(axis=1)]))
+        if self.verbose > 0:
+            print("Missing values in test after imputation:", len(imput_test_df[imput_test_df.isna().any(axis=1)]))
         
         for col_name in self.categorical:
             imputed_train_df[col_name] = imputed_train_df[col_name].astype(int)
@@ -298,7 +343,6 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             os.makedirs(directory)
 
     def create_dataframe(self, data_file, dataset):
-        approach = 'SC'
         time_1, time_2 = self.time_points
         df1 = data_file[data_file['futime'] == time_1]
         df2 = data_file[data_file['futime'] == time_2]
@@ -320,7 +364,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         if self.challenge == "regression":
             pass
         # create delta for regression tasks
-        elif self.challenge == "regression_delta":
+        elif self.challenge == "regression_delta" or self.challenge == "regression_delta_binary":
             df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_0M'] - df_merged['DAS28_CRP_3M']
             df_merged = df_merged.drop(columns="DAS28_CRP_3M")
         
@@ -333,7 +377,8 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df_merged['DrugResponse'] = le.fit_transform(df_merged['DrugResponse'])
             inverse = le.inverse_transform([0,1,2])
             # print encoder mapping
-            print(f"Label Encoder, 0:{inverse[0]}, 1:{inverse[1]}, 2:{inverse[0]}")
+            if self.verbose > 0:
+                print(f"Label Encoder, 0:{inverse[0]}, 1:{inverse[1]}, 2:{inverse[0]}")
             
         # create DrugResponse_binary for binary classficaition tasks
         elif self.challenge == "binary_classification":
@@ -342,10 +387,11 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df_merged.loc[df_merged['DrugResponse'] == 'Moderate', 'DrugResponse_binary'] = 1
             df_merged.loc[df_merged['DrugResponse'] == 'No Response', 'DrugResponse_binary'] = 0
             df_merged = df_merged.drop(columns=["DAS28_CRP_3M","DrugResponse"])
-            print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
+            if self.verbose > 0:
+                print(f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
 
-        if self.patient_group != 'all':
-            df_merged = df_merged.drop(columns='init_group')
+        # if self.patient_group != 'all':
+        #     df_merged = df_merged.drop(columns='init_group')
         # subset
         subset = 'All'
         # if self.patient_group != 'all':
@@ -356,28 +402,21 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df_merged = df_merged[df_merged['UNMC_id'].isin(self.sample_list)]
 
         df_merged = df_merged.drop(columns=['futime','UNMC_id'])
-        # df_merged = df_merged.drop(columns=['futime'])
 
-        if self.save_csv:
-            file_loc = os.path.join(
-                self.library_root, f'Coronna_Data_CERTAIN_{self.challenge}_{self.process_approach}_{time_1}M_{time_2}M_{self.patient_group}_{self.drug_group}', f'{dataset}.csv')
-            file_loc.replace(' ', '_') # avoid spacing
-            self.check_dir(file_loc)
+        return df_merged
+    
+    def save_to_csv(self, df, dataset):
+        file_loc = os.path.join(
+            self.library_root, '.csv_temp', f'{dataset}.csv')
+        self.check_dir(file_loc)
+        if self.verbose > 0:
             print("save file to:", file_loc)
-            df_merged.to_csv(file_loc, index=False)
-        else:
-            file_loc = os.path.join(
-                self.library_root, '.csv_temp', f'{dataset}.csv')
-            self.check_dir(file_loc)
-            print("save file to:", file_loc)
-            df_merged.to_csv(file_loc, index=False)
+        df.to_csv(file_loc, index=False)
             
         if dataset == 'Train':
             self.train_csv_loc = Path(file_loc)
         elif dataset == 'Test':
             self.test_csv_loc = Path(file_loc)
-
-        return df_merged
 
     def __len__(self):
         return len(self.df_out)

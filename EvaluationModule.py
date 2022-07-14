@@ -7,7 +7,7 @@ import random
 import csv
 import os
 from sklearn import metrics
-from sklearn.model_selection import ShuffleSplit, cross_val_score
+from sklearn.model_selection import ShuffleSplit, StratifiedKFold, KFold
 from scipy.stats import pearsonr
 
 
@@ -38,6 +38,19 @@ def Classification_Accuracy(true, pred):
 def F1_Score(true, pred):
     return metrics.f1_score(true, pred, average='macro')
 
+def confusion_matrix_scratch(true, pred, normalize, plot):
+    if normalize:
+        contingency_matrix = pd.crosstab(true, pred, rownames=['true'], colnames=[
+                                            'prediction'], normalize=True)
+    else:
+        contingency_matrix = pd.crosstab(true, pred, rownames=['true'], colnames=[
+                                            'prediction'], normalize=False)
+    if plot:
+        sns.heatmap(contingency_matrix.T, annot=True,
+                    fmt='.2f', cmap="YlGnBu", cbar=False)
+    else:
+        return contingency_matrix
+
 
 class AutoBuild():
     def __init__(self, seed=1, project_name="EHR_RA_SC", challenge="regression"):
@@ -46,7 +59,7 @@ class AutoBuild():
         self.challenge = challenge
         if challenge == "regression":
             self.target = "DAS28_CRP_3M"
-        elif challenge == "regression_delta":
+        elif challenge == "regression_delta" or challenge == "regression_delta_binary":
             self.target = "delta"
         elif challenge == "classification":
             self.target = "DrugResponse"
@@ -91,30 +104,51 @@ class AutoBuild():
 
         else:
             return "Unknown"
+        
+    def responseClassify_binary(self, row, baseline, next):
+        # set threshold
+        lower_change = 0.6
+        upper_change = 1.2
 
-    # def validate(self, model_id, model, X_train, y_train, scoring):
-    #     shuffle_split = ShuffleSplit(test_size=0.2, train_size=0.8, n_splits=10, random_state=self.seed)
-    #     scores = cross_val_score(estimator=model, X=X_train,
-    #                                y=y_train, scoring=scoring, cv=shuffle_split, verbose=0)
+        if "delta" in self.challenge:
+            change = row[next]
+            row[next] = row[baseline] - change
+        else:
+            change = row[baseline] - row[next]
 
-    #     self.validation.loc[len(self.validation.index)] = [model_id, metrics, scores]
+        if change <= lower_change:
+            return "Nonresponder"
+
+        elif (change <= upper_change) & (change > lower_change):
+            if row[next] > 5.1:
+                return "Nonresponder"
+            else:
+                return "Responder"
+
+        elif change > upper_change:
+            if row[next] > 3.2:
+                return "Responder"
+            else:
+                return "Responder"
+
+        else:
+            return 2
 
     def validate(self, model_id, estimator, trainset, testset):
         X = trainset.iloc[:,:-1]
         y = trainset.iloc[:,-1]
-        
-        cv = ShuffleSplit(test_size=0.2, train_size=0.8,
-                          n_splits=10, random_state=self.seed)
-        cv = cv.split(X)
 
         if "regression" in self.challenge:
+            # cv = ShuffleSplit(test_size=0.2, train_size=0.8,
+            #               n_splits=10, random_state=self.seed)
+            cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
+            cv = cv.split(X, y)
+            
             for train_index, test_index in cv:
-                X_train = X.iloc[train_index, :]
-                X_val = X.iloc[test_index, :]
-                y_train = y.iloc[train_index]
-                y_val = y.iloc[test_index]
+                X_train, X_val = X.iloc[train_index,:], X.iloc[test_index,:]
+                y_train, y_val = y.iloc[train_index], y.iloc[test_index]
                 baseline = X_val['DAS28_CRP_0M']
-
+                # summarize train and test composition
                 estimator.fit(X_train, y_train)
                 pred = estimator.predict(X_val)
                 true = y_val
@@ -122,13 +156,23 @@ class AutoBuild():
                 df = pd.DataFrame(list(zip(baseline, true, pred)), columns=[
                                   'baseline', 'true', 'pred'])
 
-                # get classification target
-                classification_true = df.apply(
-                    lambda row: self.responseClassify(row, 'baseline', 'true'), axis=1)
-                classification_pred = df.apply(
-                    lambda row: self.responseClassify(row, 'baseline', 'pred'), axis=1)
-                # self.saved_model[model_id] = (
-                #     classification_true, classification_pred)
+                if "binary" in self.challenge:
+                    # get classification target
+                    classification_true = df.apply(
+                        lambda row: self.responseClassify_binary(row, 'baseline', 'true'), axis=1)
+                    classification_pred = df.apply(
+                        lambda row: self.responseClassify_binary(row, 'baseline', 'pred'), axis=1)
+                    self.saved_model[model_id] = (
+                        classification_true, classification_pred)
+                else:
+                    # get classification target
+                    classification_true = df.apply(
+                        lambda row: self.responseClassify(row, 'baseline', 'true'), axis=1)
+                    classification_pred = df.apply(
+                        lambda row: self.responseClassify(row, 'baseline', 'pred'), axis=1)
+                    self.saved_model[model_id] = (
+                        classification_true, classification_pred)
+
 
                 self.validation.loc[len(self.validation.index)] = [model_id,
                                                                    MAE(true,
@@ -145,12 +189,13 @@ class AutoBuild():
                                                                        classification_true, classification_pred),
                                                                    F1_Score(classification_true, classification_pred)]
 
-        elif "classification" in self.challenge:
+        elif "classification" in self.challenge:       
+            cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
+            cv = cv.split(X, y)
+            
             for train_index, test_index in cv:
-                X_train = X.iloc[train_index, :]
-                X_val = X.iloc[test_index, :]
-                y_train = y.iloc[train_index]
-                y_val = y.iloc[test_index]
+                X_train, X_val = X.iloc[train_index,:], X.iloc[test_index,:]
+                y_train, y_val = y.iloc[train_index], y.iloc[test_index]
                 estimator.fit(X_train, y_train)
                 pred = estimator.predict(X_val)
                 true = y_val
@@ -167,6 +212,7 @@ class AutoBuild():
         
         # use testset to evaluate performance
         self.evaluate(model_id, estimator, testset)
+        
 
     def evaluate(self, model_id, model, test):
         X_test = test.drop(columns=self.target)
@@ -186,14 +232,23 @@ class AutoBuild():
 
             df = pd.DataFrame(list(zip(baseline, true, pred)), columns=[
                 'baseline', 'true', 'pred'])
-
-            # get classification target
-            classification_true = df.apply(
-                lambda row: self.responseClassify(row, 'baseline', 'true'), axis=1)
-            classification_pred = df.apply(
-                lambda row: self.responseClassify(row, 'baseline', 'pred'), axis=1)
-            self.saved_model[model_id] = (
-                classification_true, classification_pred)
+            
+            if "binary" in self.challenge:
+                # get classification target
+                classification_true = df.apply(
+                    lambda row: self.responseClassify_binary(row, 'baseline', 'true'), axis=1)
+                classification_pred = df.apply(
+                    lambda row: self.responseClassify_binary(row, 'baseline', 'pred'), axis=1)
+                self.saved_model[model_id] = (
+                    classification_true, classification_pred)
+            else:
+                # get classification target
+                classification_true = df.apply(
+                    lambda row: self.responseClassify(row, 'baseline', 'true'), axis=1)
+                classification_pred = df.apply(
+                    lambda row: self.responseClassify(row, 'baseline', 'pred'), axis=1)
+                self.saved_model[model_id] = (
+                    classification_true, classification_pred)
 
             self.test.loc[len(self.validation.index)] = [model_id,
                                                                 MAE(true,
@@ -221,7 +276,7 @@ class AutoBuild():
                                                                     true, pred),
                                                                 F1_Score(true, pred)]
             self.saved_model[model_id] = (df['true'], df['pred'])
-
+            
     def evaluate_explore(self, model_id, model, test):
         X_test = test.drop(columns=self.target)
         true = test[self.target]
@@ -248,13 +303,22 @@ class AutoBuild():
                                                                                           pred),
                                                                                        Pearson_Correlation(true, pred)]
 
-            # get classification target
-            classification_true = df.apply(
-                lambda row: self.responseClassify(row, 'baseline', 'true'), axis=1)
-            classification_pred = df.apply(
-                lambda row: self.responseClassify(row, 'baseline', 'pred'), axis=1)
-            self.saved_model[model_id] = (
-                classification_true, classification_pred)
+            if "binary" in self.challenge:
+                # get classification target
+                classification_true = df.apply(
+                    lambda row: self.responseClassify_binary(row, 'baseline', 'true'), axis=1)
+                classification_pred = df.apply(
+                    lambda row: self.responseClassify_binary(row, 'baseline', 'pred'), axis=1)
+                self.saved_model[model_id] = (
+                    classification_true, classification_pred)
+            else:
+                # get classification target
+                classification_true = df.apply(
+                    lambda row: self.responseClassify(row, 'baseline', 'true'), axis=1)
+                classification_pred = df.apply(
+                    lambda row: self.responseClassify(row, 'baseline', 'pred'), axis=1)
+                self.saved_model[model_id] = (
+                    classification_true, classification_pred)
 
             self.classification_leaderboard.loc[len(self.classification_leaderboard.index)] = [model_id,
                                                                                                Classification_Accuracy(
