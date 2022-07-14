@@ -7,7 +7,7 @@ import random
 import csv
 import os
 from sklearn import metrics
-from sklearn.model_selection import ShuffleSplit, cross_val_score
+from sklearn.model_selection import ShuffleSplit, StratifiedKFold, KFold
 from scipy.stats import pearsonr
 
 
@@ -137,19 +137,18 @@ class AutoBuild():
     def validate(self, model_id, estimator, trainset, testset):
         X = trainset.iloc[:,:-1]
         y = trainset.iloc[:,-1]
-        
-        cv = ShuffleSplit(test_size=0.2, train_size=0.8,
-                          n_splits=10, random_state=self.seed)
-        cv = cv.split(X)
 
         if "regression" in self.challenge:
+            # cv = ShuffleSplit(test_size=0.2, train_size=0.8,
+            #               n_splits=10, random_state=self.seed)
+            cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
+            cv = cv.split(X, y)
+            
             for train_index, test_index in cv:
-                X_train = X.iloc[train_index, :]
-                X_val = X.iloc[test_index, :]
-                y_train = y.iloc[train_index]
-                y_val = y.iloc[test_index]
+                X_train, X_val = X.iloc[train_index,:], X.iloc[test_index,:]
+                y_train, y_val = y.iloc[train_index], y.iloc[test_index]
                 baseline = X_val['DAS28_CRP_0M']
-
+                # summarize train and test composition
                 estimator.fit(X_train, y_train)
                 pred = estimator.predict(X_val)
                 true = y_val
@@ -190,12 +189,13 @@ class AutoBuild():
                                                                        classification_true, classification_pred),
                                                                    F1_Score(classification_true, classification_pred)]
 
-        elif "classification" in self.challenge:
+        elif "classification" in self.challenge:       
+            cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
+            cv = cv.split(X, y)
+            
             for train_index, test_index in cv:
-                X_train = X.iloc[train_index, :]
-                X_val = X.iloc[test_index, :]
-                y_train = y.iloc[train_index]
-                y_val = y.iloc[test_index]
+                X_train, X_val = X.iloc[train_index,:], X.iloc[test_index,:]
+                y_train, y_val = y.iloc[train_index], y.iloc[test_index]
                 estimator.fit(X_train, y_train)
                 pred = estimator.predict(X_val)
                 true = y_val

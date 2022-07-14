@@ -175,22 +175,22 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df_train = self.create_dataframe(imputed_train, 'Train')
             df_test = self.create_dataframe(imputed_test, 'Test')
             
-            if balance_class:
-                X = df_train.iloc[:,:-1]
-                y = df_train.iloc[:,-1]
-                target_name = df_train.columns[-1]
-                if self.verbose > 0:
-                    print("before balance class:", df_train[target_name].value_counts())
-                # define pipeline
-                oversample = SMOTE(sampling_strategy=0.8)
-                undersample = RandomUnderSampler(sampling_strategy=0.9)
-                # transform the dataset
-                X, y = oversample.fit_resample(X, y)
-                X, y = undersample.fit_resample(X, y)
-                df_train = X
-                df_train[target_name] = y
-                if self.verbose > 0:
-                    print("after balance class:", df_train[target_name].value_counts())
+            # if balance_class:
+            #     X = df_train.iloc[:,:-1]
+            #     y = df_train.iloc[:,-1]
+            #     target_name = df_train.columns[-1]
+            #     if self.verbose > 0:
+            #         print("before balance class:", df_train[target_name].value_counts())
+            #     # define pipeline
+            #     oversample = SMOTE(sampling_strategy=0.8)
+            #     undersample = RandomUnderSampler(sampling_strategy=0.9)
+            #     # transform the dataset
+            #     X, y = oversample.fit_resample(X, y)
+            #     X, y = undersample.fit_resample(X, y)
+            #     df_train = X
+            #     df_train[target_name] = y
+            #     if self.verbose > 0:
+            #         print("after balance class:", df_train[target_name].value_counts())
                 
             self.save_to_csv(df_train, "Train")
             self.save_to_csv(df_test, "Test")
@@ -401,8 +401,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             subset = 'KVB'
             df_merged = df_merged[df_merged['UNMC_id'].isin(self.sample_list)]
 
-        # df_merged = df_merged.drop(columns=['futime','UNMC_id'])
-        # df_merged = df_merged.drop(columns=['futime'])
+        df_merged = df_merged.drop(columns=['futime','UNMC_id'])
 
         return df_merged
     
