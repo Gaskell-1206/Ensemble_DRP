@@ -168,8 +168,6 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                 
             else:
                 imputed_train, imputed_test = self.Apply_imputation(df)
-                
-            # print(imputed_train['futime'].value_counts())
 
             # create dataframe by two consecutive months
             df_train = self.create_dataframe(imputed_train, 'Train')
@@ -370,6 +368,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         
         # create DrugResponse for 3-class classification tasks
         elif self.challenge == "classification":
+            # df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_0M'] - df_merged['DAS28_CRP_3M']
             df_merged.loc[:, 'DrugResponse'] = df_merged.apply(lambda row: responseClassify(row), axis=1)
             df_merged = df_merged.drop(columns="DAS28_CRP_3M")
             # label encoder
