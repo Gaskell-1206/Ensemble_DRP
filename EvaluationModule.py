@@ -200,11 +200,11 @@ class AutoBuild():
                 X_train, X_val = X.iloc[train_index,:], X.iloc[test_index,:]
                 y_train, y_val = y.iloc[train_index], y.iloc[test_index]
                 
-                print("before balancing class:", y_train.value_counts())
+                # print("before balancing class:", y_train.value_counts())
                 # define pipeline
                 resample = SMOTETomek(tomek=TomekLinks(sampling_strategy='majority'))
                 X_train, y_train = resample.fit_resample(X_train, y_train)
-                print("after balancing class:", y_train.value_counts())
+                # print("after balancing class:", y_train.value_counts())
                 estimator.fit(X_train, y_train)
                 pred = estimator.predict(X_val)
                 true = y_val

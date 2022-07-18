@@ -59,7 +59,6 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                  train_test_rate: float = 0.8,
                  remove_low_DAS = False,
                  save_csv: bool = False,
-                 balance_class: bool = False,
                  random_state: Optional[Callable] = 2022,
                  verbose: int = 0,
                  ):
@@ -172,30 +171,13 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             # create dataframe by two consecutive months
             df_train = self.create_dataframe(imputed_train, 'Train')
             df_test = self.create_dataframe(imputed_test, 'Test')
-            
-            # if balance_class:
-            #     X = df_train.iloc[:,:-1]
-            #     y = df_train.iloc[:,-1]
-            #     target_name = df_train.columns[-1]
-            #     if self.verbose > 0:
-            #         print("before balance class:", df_train[target_name].value_counts())
-            #     # define pipeline
-            #     oversample = SMOTE(sampling_strategy=0.8)
-            #     undersample = RandomUnderSampler(sampling_strategy=0.9)
-            #     # transform the dataset
-            #     X, y = oversample.fit_resample(X, y)
-            #     X, y = undersample.fit_resample(X, y)
-            #     df_train = X
-            #     df_train[target_name] = y
-            #     if self.verbose > 0:
-            #         print("after balance class:", df_train[target_name].value_counts())
                 
             self.save_to_csv(df_train, "Train")
             self.save_to_csv(df_test, "Test")
             
             if self.save_csv:
                 file_loc = os.path.join(
-                    self.library_root, 'tableau_data', f'Coronna_Data_CERTAIN_{self.challenge}_{self.process_approach}_{self.time_points[0]}M_{self.time_points[1]}M_{self.patient_group}_{self.drug_group}_{str(balance_class)}', f'{dataset}.csv')
+                    self.library_root, 'tableau_data', f'Coronna_Data_CERTAIN_{self.challenge}_{self.process_approach}_{self.time_points[0]}M_{self.time_points[1]}M_{self.patient_group}_{self.drug_group}', f'{dataset}.csv')
                 file_loc = file_loc.replace(' ', '_') # avoid spacing
                 self.check_dir(file_loc)
                 if self.verbose > 0:
