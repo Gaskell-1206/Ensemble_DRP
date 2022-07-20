@@ -305,7 +305,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         # impute test set
         if self.verbose > 0:
             print("Missing values in test before imputation:", len(test[test.isna().any(axis=1)]))
-        imputed_test = imputer.fit_transform(test)
+        imputed_test = imputer.transform(test)
         imput_test_df = pd.DataFrame(imputed_test, columns=test.columns)
         imput_test_df['UNMC_id'] = test_UNMC_id.values
         if self.verbose > 0:

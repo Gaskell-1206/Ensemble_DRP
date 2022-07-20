@@ -11,17 +11,22 @@ def fine_tune(train, model, search_methods):
     if model == "drf_classification": # distributed random forests
         model = RandomForestClassifier()
         param_search_grid = rf_parameters()
+        scoring = "f1_weighted"
+    elif model == "drf_regression":
+        model = RandomForestRegressor()
+        param_search_grid = rf_parameters()
+        scoring = "neg_mean_squared_error"
     elif model == "GBM":
         pass # to be added
     
     print("param_search_grid:", param_search_grid)
     
     if search_methods == "GridSearch":
-        search_model = GridSearchCV(estimator=model, param_grid=param_search_grid,
+        search_model = GridSearchCV(estimator=model, param_grid=param_search_grid, scoring=scoring,
                                     cv=10, n_jobs=-1, verbose = 0)
     elif search_methods == "RandomSearch":
-        search_model = RandomizedSearchCV(estimator=model, param_distributions=param_search_grid, n_iter=20,
-                                          cv=10, n_jobs=-1, verbose = 0)
+        search_model = RandomizedSearchCV(estimator=model, param_distributions=param_search_grid, scoring=scoring,
+                                          n_iter=30, cv=10, n_jobs=-1, verbose = 0)
     search_model.fit(X_train, y_train)
     print("best_params:",search_model.best_params_)
     tuned_model = search_model.best_estimator_

@@ -1,16 +1,20 @@
-import pathlib
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-import pandas as pd
-import random
 import csv
 import os
-from imblearn.combine import SMOTETomek
-from imblearn.under_sampling import TomekLinks
-from sklearn import metrics
-from sklearn.model_selection import ShuffleSplit, StratifiedKFold, KFold
+import pathlib
+import random
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import smogn
+from imblearn.combine import SMOTEENN, SMOTETomek
+from imblearn.under_sampling import EditedNearestNeighbours, TomekLinks
 from scipy.stats import pearsonr
+from sklearn import metrics
+from sklearn.model_selection import (KFold, RepeatedKFold,
+                                     RepeatedStratifiedKFold, ShuffleSplit,
+                                     StratifiedKFold)
 
 
 def R2(true, pred):
@@ -40,13 +44,14 @@ def Classification_Accuracy(true, pred):
 def F1_Score(true, pred):
     return metrics.f1_score(true, pred, average='macro')
 
+
 def confusion_matrix_scratch(true, pred, normalize, plot):
     if normalize:
         contingency_matrix = pd.crosstab(true, pred, rownames=['true'], colnames=[
-                                            'prediction'], normalize=True)
+            'prediction'], normalize=True)
     else:
         contingency_matrix = pd.crosstab(true, pred, rownames=['true'], colnames=[
-                                            'prediction'], normalize=False)
+            'prediction'], normalize=False)
     if plot:
         sns.heatmap(contingency_matrix.T, annot=True,
                     fmt='.2f', cmap="YlGnBu", cbar=False)
@@ -55,7 +60,7 @@ def confusion_matrix_scratch(true, pred, normalize, plot):
 
 
 class AutoBuild():
-    def __init__(self, seed=1, project_name="EHR_RA_SC", challenge="regression"):
+    def __init__(self, seed=1, project_name="EHR_RA_SC", challenge="regression", balance_class=0):
         self.seed = seed
         self.project_name = project_name
         self.challenge = challenge
@@ -67,10 +72,14 @@ class AutoBuild():
             self.target = "DrugResponse"
         elif challenge == "binary_classification":
             self.target = "DrugResponse_binary"
-        self.validation = pd.DataFrame(columns=[
+        self.balance_class = balance_class
+
+        self.train_perf = pd.DataFrame(columns=[
                                        "model", "MAE", "MSE", "RMSE", "R2", "Pearson_Correlation", "Accuracy", "F1-Score"])
-        self.test = pd.DataFrame(columns=[
-                                       "model", "MAE", "MSE", "RMSE", "R2", "Pearson_Correlation", "Accuracy", "F1-Score"])
+        self.val_perf = pd.DataFrame(columns=[
+            "model", "MAE", "MSE", "RMSE", "R2", "Pearson_Correlation", "Accuracy", "F1-Score"])
+        self.test_perf = pd.DataFrame(columns=[
+            "model", "MAE", "MSE", "RMSE", "R2", "Pearson_Correlation", "Accuracy", "F1-Score"])
         self.regression_leaderboard = pd.DataFrame(
             columns=["model", "MAE", "MSE", "RMSE", "R2", "Pearson_Correlation"])
         self.classification_leaderboard = pd.DataFrame(
@@ -106,7 +115,7 @@ class AutoBuild():
 
         else:
             return "Unknown"
-        
+
     def responseClassify_binary(self, row, baseline, next):
         # set threshold
         lower_change = 0.6
@@ -137,97 +146,133 @@ class AutoBuild():
             return 2
 
     def validate(self, model_id, estimator, trainset, testset):
-        X = trainset.iloc[:,:-1]
-        y = trainset.iloc[:,-1]
+        X = trainset.iloc[:, :-1]
+        y = trainset.iloc[:, -1]
+        balance_class = self.balance_class
 
         if "regression" in self.challenge:
-            # cv = ShuffleSplit(test_size=0.2, train_size=0.8,
-            #               n_splits=10, random_state=self.seed)
-            cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
+            # define balance class pipeline
+            if balance_class == 2:
+                # create pseudo-class for StratifiedKFold
+                if "binary" in self.challenge:
+                    X.loc[:, self.target] = y
+                    y = X.apply(lambda row: self.responseClassify_binary(
+                        row, 'DAS28_CRP_0M', self.target), axis=1)
+                elif self.challenge == 'regression':
+                    X.loc[:, self.target] = y
+                    y = X.apply(lambda row: self.responseClassify(
+                        row, 'DAS28_CRP_0M', self.target), axis=1)
+                cv = RepeatedStratifiedKFold(
+                    n_splits=10, n_repeats=3, random_state=self.seed)
+                # cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
+            elif balance_class == 1:
+                # # create pseudo-class for StratifiedKFold
+                if "binary" in self.challenge:
+                    X.loc[:, self.target] = y
+                    y = X.apply(lambda row: self.responseClassify_binary(
+                        row, 'DAS28_CRP_0M', self.target), axis=1)
+                else:
+                    X.loc[:, self.target] = y
+                    y = X.apply(lambda row: self.responseClassify(
+                        row, 'DAS28_CRP_0M', self.target), axis=1)
+                # print("train y:", y.value_counts())
+                cv = RepeatedStratifiedKFold(
+                    n_splits=10, n_repeats=3, random_state=self.seed)
+                # cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
+
+            else:
+                cv = RepeatedKFold(n_splits=10, n_repeats=3,
+                                   shuffle=True, random_state=self.seed)
+
             cv = cv.split(X, y)
-            
+
             for train_index, test_index in cv:
-                X_train, X_val = X.iloc[train_index,:], X.iloc[test_index,:]
-                y_train, y_val = y.iloc[train_index], y.iloc[test_index]
-                baseline = X_val['DAS28_CRP_0M']
-                
+                if balance_class == 2:
+                    X_train = X.iloc[train_index, :]
+                    y_train = y.iloc[train_index]
+                    X_val = X.iloc[test_index, :-1]
+                    y_val = X.iloc[test_index, -1]
+                    print("before sampling:", y_train.value_counts())
+                    # print("class y_val:",y.iloc[test_index].value_counts())
+                    resample = SMOTEENN(enn=EditedNearestNeighbours(
+                        sampling_strategy='auto', n_neighbors=3))
+                    X_train, y_train = resample.fit_resample(X_train, y_train)
+                    print("after sampling:", y_train.value_counts())
+                    X_train = X_train.iloc[:, :-1]
+                    y_train = X_train.iloc[:, -1]
+                    # print("after sampling:",y_train)
+
+                elif balance_class == 1:
+                    X_train = X.iloc[train_index, :-1]
+                    y_train = y.iloc[train_index]
+                    X_val = X.iloc[test_index, :-1]
+                    y_val = y.iloc[test_index]
+                    data_for_balance = X.iloc[train_index, :].reset_index(
+                        drop=True)
+                    try:
+                        train = smogn.smoter(
+                            data=data_for_balance, y=self.target, samp_method="balance")
+                    except ValueError as e:
+                        # print(e)
+                        pass
+                    X_train = train.iloc[:, :-1]
+                    y_train = train.iloc[:, -1]
+                    X_val = X.iloc[test_index, :-1]
+                    y_val = X.iloc[test_index, -1]
+
+                else:
+                    X_train, X_val = X.iloc[train_index,
+                                            :], X.iloc[test_index, :]
+                    y_train, y_val = y.iloc[train_index], y.iloc[test_index]
+
                 # summarize train and test composition
                 estimator.fit(X_train, y_train)
-                pred = estimator.predict(X_val)
-                true = y_val
 
-                df = pd.DataFrame(list(zip(baseline, true, pred)), columns=[
-                                  'baseline', 'true', 'pred'])
+                working_set = X_train
+                working_set[self.target] = y_train.values
+                self.evaluate(model_id, estimator, "train",
+                              working_set, self.train_perf)
+                working_set = X_val
+                working_set[self.target] = y_val.values
+                self.evaluate(model_id, estimator, "val",
+                              working_set, self.val_perf)
 
-                if "binary" in self.challenge:
-                    # get classification target
-                    classification_true = df.apply(
-                        lambda row: self.responseClassify_binary(row, 'baseline', 'true'), axis=1)
-                    classification_pred = df.apply(
-                        lambda row: self.responseClassify_binary(row, 'baseline', 'pred'), axis=1)
-                    self.saved_model[model_id] = (
-                        classification_true, classification_pred)
-                else:
-                    # get classification target
-                    classification_true = df.apply(
-                        lambda row: self.responseClassify(row, 'baseline', 'true'), axis=1)
-                    classification_pred = df.apply(
-                        lambda row: self.responseClassify(row, 'baseline', 'pred'), axis=1)
-                    self.saved_model[model_id] = (
-                        classification_true, classification_pred)
-
-
-                self.validation.loc[len(self.validation.index)] = [model_id,
-                                                                   MAE(true,
-                                                                       pred),
-                                                                   MSE(true,
-                                                                       pred),
-                                                                   RMSE(
-                                                                       true, pred),
-                                                                   R2(true,
-                                                                      pred),
-                                                                   Pearson_Correlation(
-                                                                       true, pred),
-                                                                   Classification_Accuracy(
-                                                                       classification_true, classification_pred),
-                                                                   F1_Score(classification_true, classification_pred)]
-
-        elif "classification" in self.challenge:       
-            cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
+        elif "classification" in self.challenge:
+            cv = RepeatedStratifiedKFold(
+                n_splits=10, n_repeats=3, random_state=self.seed)
             cv = cv.split(X, y)
-            
+
             for train_index, test_index in cv:
-                X_train, X_val = X.iloc[train_index,:], X.iloc[test_index,:]
+                X_train, X_val = X.iloc[train_index, :], X.iloc[test_index, :]
                 y_train, y_val = y.iloc[train_index], y.iloc[test_index]
-                
-                # print("before balancing class:", y_train.value_counts())
-                # define pipeline
-                resample = SMOTETomek(tomek=TomekLinks(sampling_strategy='majority'))
+
+                # define balance class pipeline
+                resample = SMOTETomek(
+                    tomek=TomekLinks(sampling_strategy='auto'))
                 X_train, y_train = resample.fit_resample(X_train, y_train)
                 # print("after balancing class:", y_train.value_counts())
                 estimator.fit(X_train, y_train)
-                pred = estimator.predict(X_val)
-                true = y_val
 
-                self.validation.loc[len(self.validation.index)] = [model_id,
-                                                                   None,
-                                                                   None,
-                                                                   None,
-                                                                   None,
-                                                                   None,
-                                                                   Classification_Accuracy(
-                                                                       true, pred),
-                                                                   F1_Score(true, pred)]
-        
-        # use testset to evaluate performance
-        self.evaluate(model_id, estimator, testset)
-        
+                working_set = X_train
+                working_set[self.target] = y_train.values
+                self.evaluate(model_id, estimator, "train",
+                              working_set, self.train_perf)
+                working_set = X_val
+                working_set[self.target] = y_val.values
+                self.evaluate(model_id, estimator, "val",
+                              working_set, self.val_perf)
 
-    def evaluate(self, model_id, model, test):
-        X_test = test.drop(columns=self.target)
-        true = test[self.target]
-        pred = model.predict(X_test)
-        baseline = test['DAS28_CRP_0M']
+        # use all data in trainset to train model and testset to evaluate performance
+        X = trainset.iloc[:, :-1]
+        y = trainset.iloc[:, -1]
+        estimator.fit(X, y)
+        self.evaluate(model_id, estimator, "test", testset, self.test_perf)
+
+    def evaluate(self, model_id, model, dataset, working_set, save_df):
+        X = working_set.drop(columns=self.target)
+        true = working_set[self.target]
+        pred = model.predict(X)
+        baseline = working_set['DAS28_CRP_0M']
 
         baseline, true, pred = np.array(
             baseline), np.array(true), np.array(pred)
@@ -241,7 +286,7 @@ class AutoBuild():
 
             df = pd.DataFrame(list(zip(baseline, true, pred)), columns=[
                 'baseline', 'true', 'pred'])
-            
+
             if "binary" in self.challenge:
                 # get classification target
                 classification_true = df.apply(
@@ -259,33 +304,34 @@ class AutoBuild():
                 self.saved_model[model_id] = (
                     classification_true, classification_pred)
 
-            self.test.loc[len(self.validation.index)] = [model_id,
-                                                                MAE(true,
-                                                                    pred),
-                                                                MSE(true,
-                                                                    pred),
-                                                                RMSE(
-                                                                    true, pred),
-                                                                R2(true,
-                                                                    pred),
-                                                                Pearson_Correlation(
-                                                                    true, pred),
-                                                                Classification_Accuracy(
-                                                                    classification_true, classification_pred),
-                                                                F1_Score(classification_true, classification_pred)]
+            save_df.loc[len(save_df.index)] = [model_id,
+                                               MAE(true,
+                                                   pred),
+                                               MSE(true,
+                                                   pred),
+                                               RMSE(
+                                                   true, pred),
+                                               R2(true,
+                                                  pred),
+                                               Pearson_Correlation(
+                                                   true, pred),
+                                               Classification_Accuracy(
+                                                   classification_true, classification_pred),
+                                               F1_Score(classification_true, classification_pred)]
 
         elif "classification" in self.challenge:
-            self.test.loc[len(self.validation.index)] = [model_id,
-                                                                None,
-                                                                None,
-                                                                None,
-                                                                None,
-                                                                None,
-                                                                Classification_Accuracy(
-                                                                    true, pred),
-                                                                F1_Score(true, pred)]
-            self.saved_model[model_id] = (df['true'], df['pred'])
-            
+            save_df.loc[len(save_df.index)] = [model_id,
+                                               None,
+                                               None,
+                                               None,
+                                               None,
+                                               None,
+                                               Classification_Accuracy(
+                                                   true, pred),
+                                               F1_Score(true, pred)]
+            if dataset == "test":
+                self.saved_model[model_id] = (df['true'], df['pred'])
+
     def evaluate_explore(self, model_id, model, test):
         X_test = test.drop(columns=self.target)
         true = test[self.target]
@@ -341,16 +387,9 @@ class AutoBuild():
                                                                                                F1_Score(df['true'], df['pred'])]
             self.saved_model[model_id] = (df['true'], df['pred'])
 
-    def leaderboard(self):
-        if "regression" in self.challenge:
-            return self.regression_leaderboard, self.classification_leaderboard
-        elif "classification" in self.challenge:
-            return None, self.classification_leaderboard
-        else:
-            print("challenge does not exist")
-
     def confusion_matrix(self, model_id, plot=True, normalize=True):
         true, pred = self.saved_model[model_id]
+        print(pred.value_counts())
         if normalize:
             contingency_matrix = pd.crosstab(true, pred, rownames=['true'], colnames=[
                                              'prediction'], normalize=True)
@@ -395,15 +434,8 @@ class AutoBuild():
             print("mode does not exist")
 
     def validation_output(self, dataset, output='../leaderboard/'):
-        validation = self.validation
+        validation = self.val_perf
         path = os.path.join(output, f'{self.project_name}_output.csv')
-        # if "regression" in dataset.challenge:
-        #     path = os.path.join(
-        #         output, f'{self.project_name}_regression_output.csv')
-        # elif "classification" in dataset.challenge:
-        #     path = os.path.join(
-        #         output, f'{self.project_name}_classification_output.csv')
-
         header = ["dataset", "challenge", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
                   "model_id", "MAE", "MSE", "RMSE", 'R2', "Pearson_Correlation", "Accuracy", "F1-Score"]
 
@@ -429,14 +461,8 @@ class AutoBuild():
                 writer.writerow(data)
 
     def test_output(self, dataset, output='../leaderboard/'):
-        test = self.test
+        test = self.test_perf
         path = os.path.join(output, f'{self.project_name}_output.csv')
-        # if "regression" in dataset.challenge:
-        #     path = os.path.join(
-        #         output, f'{self.project_name}_regression_output.csv')
-        # elif "classification" in dataset.challenge:
-        #     path = os.path.join(
-        #         output, f'{self.project_name}_classification_output.csv')
 
         header = ["dataset", "challenge", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
                   "model_id", "MAE", "MSE", "RMSE", 'R2', "Pearson_Correlation", "Accuracy", "F1-Score"]
@@ -460,39 +486,4 @@ class AutoBuild():
                 data = ["test", dataset.challenge, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
                         rows["model"], rows["MAE"], rows["MSE"], rows["RMSE"], rows["R2"], rows["Pearson_Correlation"], rows["Accuracy"], rows["F1-Score"]]
                 # write the data
-                writer.writerow(data)            
-    # def save_output(self, dataset, output='../leaderboard/'):
-    #     # regression
-    #     re = self.regression_leaderboard
-    #     path_re = pathlib.Path(output) / f'{self.project_name}_regression_output.csv'
-    #     header_re = ["challenge", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
-    #                  "model_id", "MAE", "MSE", "RMSE", 'R2', "Pearson_Correlation"]
-
-    #     with open(path_re, 'a') as f:
-    #         # create the csv writer
-    #         writer = csv.writer(f)
-    #         # write the header
-    #         writer.writerow(header_re)
-    #         for index, rows in re.iterrows():
-    #             data = [dataset.challenge, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.random_state,
-    #                     rows['model'], rows['MAE'], rows['MSE'], rows['RMSE'], rows['R2'], rows['Pearson_Correlation']]
-    #             # write the data
-    #             writer.writerow(data)
-
-    #     # classification
-    #     cl = self.regression_leaderboard
-    #     path_cl = pathlib.Path(output) / \
-    #         f'{self.project_name}_classification_output.csv'
-    #     header_cl = ["challenge", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
-    #                  "model_id", "Accuracy", "F1-Score"]
-
-    #     with open(path_cl, 'a') as f:
-    #         # create the csv writer
-    #         writer = csv.writer(f)
-    #         # write the header
-    #         writer.writerow(header_re)
-    #         for index, rows in cl.iterrows():
-    #             data = [dataset.challenge, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.random_state,
-    #                     rows['model'], rows['MAE'], rows['MSE'], rows['RMSE'], rows['R2'], rows['Pearson_Correlation']]
-    #             # write the data
-    #             writer.writerow(data)
+                writer.writerow(data)
