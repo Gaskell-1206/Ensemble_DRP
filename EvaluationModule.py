@@ -182,7 +182,7 @@ class AutoBuild():
 
             else:
                 cv = RepeatedKFold(n_splits=10, n_repeats=3,
-                                   shuffle=True, random_state=self.seed)
+                                   random_state=self.seed)
 
             cv = cv.split(X, y)
 
