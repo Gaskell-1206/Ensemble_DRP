@@ -17,7 +17,7 @@ warnings.filterwarnings("ignore")
 import tqdm
 import sklearn.model_selection
 
-def tune_models(dataset_parms, fixed_model_parms,test_model_parms, method):
+def tune_models(dataset_parms, fixed_model_params,test_model_parms, method,project_name,ballance_class, output='../leaderboard/'):
         """"
         dataset_params (dict)- (atribute:value)
         fixed model parms( dict)- (model:(atribute:vales))
@@ -26,12 +26,16 @@ def tune_models(dataset_parms, fixed_model_parms,test_model_parms, method):
         output: for now (list) of tuned models.
         """
         dataset = CoronnaCERTAINDataset(**dataset_parms)
-        output=[]
-        for mod in list(fixed_model_parms.keys()):
-            temp=model(**fixed_model_parms[mod])
+        train=dataset.get_train()[0]
+        test= dataset.get_test()[0]
+        aml = EvaluationModule.AutoBuild(seed=dataset.random_state, project_name=project_name, challenge=dataset.challenge, balance_class=ballance_class)
+        for mod in list(fixed_model_params.keys()):
+            temp=model(**fixed_model_params[mod])
             temp.hyper_parameter_tune(method=method,dataset=dataset,params=test_model_parms[mod])
-            output.append(temp.model)
-        return output
+            aml.validate(model_id=temp.model_id, estimator=temp.model,trainset=train,testset=test)
+        aml.validation_output(dataset=dataset,output=output)
+        aml.test_output(dataset=dataset,output=output)
+        return aml
 
 
 
@@ -80,6 +84,7 @@ class model():
     def __init__(self, model_list,base_model_params=[], ensamble_type='Stacking',model_id="", meta_learner=None, meta_learner_params=None, hyper_parameters=None, challenge="Regression", ensamble=False, random_state=0):
         self.random_state=random_state
         self.challenge=challenge
+        self.model_id=model_id
         if(ensamble):
             self.model=make_ensamble(model_list, base_model_params, ensamble_type, model_id, meta_learner, meta_learner_params, hyper_parameters, challenge).model
         else:
