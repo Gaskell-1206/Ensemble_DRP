@@ -2,6 +2,7 @@ import csv
 import os
 import pathlib
 import random
+import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,6 +16,9 @@ from sklearn import metrics
 from sklearn.model_selection import (KFold, RepeatedKFold,
                                      RepeatedStratifiedKFold, ShuffleSplit,
                                      StratifiedKFold)
+
+import h2o
+from h2o.automl import H2OAutoML
 
 
 def R2(true, pred):
@@ -86,6 +90,7 @@ class AutoBuild():
             columns=["model", "Accuracy", "F1-Score"])
         self.saved_model = {}
         self.best_model = ''
+
     def responseClassify(self, row, baseline, next):
         # set threshold
         lower_change = 0.6
@@ -150,16 +155,14 @@ class AutoBuild():
         balance_class = self.balance_class
 
         if "regression" in self.challenge:
-      
             # define balance class pipeline
             if balance_class == 2:
-              
                 # create pseudo-class for StratifiedKFold
                 if "binary" in self.challenge:
                     X.loc[:, self.target] = y
                     y = X.apply(lambda row: self.responseClassify_binary(
                         row, 'DAS28_CRP_0M', self.target), axis=1)
-                elif self.challenge == 'regression' or self.challenge == 'regression_delta':
+                elif self.challenge == 'regression':
                     X.loc[:, self.target] = y
                     y = X.apply(lambda row: self.responseClassify(
                         row, 'DAS28_CRP_0M', self.target), axis=1)
@@ -195,8 +198,10 @@ class AutoBuild():
                     y_val = X.iloc[test_index, -1]
                     print("before sampling:", y_train.value_counts())
                     # print("class y_val:",y.iloc[test_index].value_counts())
-                    resample = SMOTEENN(enn=EditedNearestNeighbours(
-                        sampling_strategy='auto', n_neighbors=3))
+                    # resample = SMOTEENN(enn=EditedNearestNeighbours(
+                    #     sampling_strategy='auto', n_neighbors=3))
+                    resample = SMOTETomek(
+                        tomek=TomekLinks(sampling_strategy='auto'))
                     X_train, y_train = resample.fit_resample(X_train, y_train)
                     print("after sampling:", y_train.value_counts())
                     X_train = X_train.iloc[:, :-1]
@@ -208,16 +213,32 @@ class AutoBuild():
                     y_train = y.iloc[train_index]
                     X_val = X.iloc[test_index, :-1]
                     y_val = y.iloc[test_index]
+                    # print("before sampling:", y_train.value_counts())
                     data_for_balance = X.iloc[train_index, :].reset_index(
                         drop=True)
                     try:
                         train = smogn.smoter(
                             data=data_for_balance, y=self.target, samp_method="balance")
                     except ValueError as e:
-                        print(e)
+                        # print(e)
+                        train = data_for_balance
                         pass
+
                     X_train = train.iloc[:, :-1]
                     y_train = train.iloc[:, -1]
+
+                    # create pseudo-class for statistics
+                    X_for_stat = copy.deepcopy(X_train)
+                    if "binary" in self.challenge:
+                        X_for_stat.loc[:, self.target] = y_train
+                        y_pseudo_label = X_for_stat.apply(lambda row: self.responseClassify_binary(
+                            row, 'DAS28_CRP_0M', self.target), axis=1)
+                    elif self.challenge == 'regression':
+                        X_for_stat.loc[:, self.target] = y_train
+                        y_pseudo_label = X_for_stat.apply(lambda row: self.responseClassify(
+                            row, 'DAS28_CRP_0M', self.target), axis=1)
+                    print("after sampling:", y_pseudo_label.value_counts())
+
                     X_val = X.iloc[test_index, :-1]
                     y_val = X.iloc[test_index, -1]
 
@@ -269,6 +290,8 @@ class AutoBuild():
         estimator.fit(X, y)
         self.evaluate(model_id, estimator, "test", testset, self.test_perf)
 
+    # def validate_h2o(self, model_id, estimators, trainset, testset):
+
     def evaluate(self, model_id, model, dataset, working_set, save_df):
         X = working_set.drop(columns=self.target)
         true = working_set[self.target]
@@ -284,7 +307,6 @@ class AutoBuild():
                           columns=['baseline', 'true', 'pred'])
 
         if "regression" in self.challenge:
-
             df = pd.DataFrame(list(zip(baseline, true, pred)), columns=[
                 'baseline', 'true', 'pred'])
 
@@ -437,8 +459,8 @@ class AutoBuild():
     def validation_output(self, dataset, output='../leaderboard/'):
         validation = self.val_perf
         path = os.path.join(output, f'{self.project_name}_output.csv')
-        header = ["dataset", "challenge","balance_class", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
-                  "model_id", "MAE", "MSE", "RMSE", 'R2', "Pearson_Correlation", "Accuracy", "F1-Score" ]
+        header = ["dataset", "challenge", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
+                  "model_id", "MAE", "MSE", "RMSE", 'R2', "Pearson_Correlation", "Accuracy", "F1-Score"]
 
         # if header exists
         has_header = False
@@ -456,7 +478,7 @@ class AutoBuild():
                 # write the header
                 writer.writerow(header)
             for index, rows in validation.iterrows():
-                data = ["validation", dataset.challenge,str(self.balance_class),  dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
+                data = ["validation", dataset.challenge, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
                         rows["model"], rows["MAE"], rows["MSE"], rows["RMSE"], rows["R2"], rows["Pearson_Correlation"], rows["Accuracy"], rows["F1-Score"]]
                 # write the data
                 writer.writerow(data)
@@ -465,7 +487,7 @@ class AutoBuild():
         test = self.test_perf
         path = os.path.join(output, f'{self.project_name}_output.csv')
 
-        header = ["dataset", "challenge",'balance_class', "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
+        header = ["dataset", "challenge", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
                   "model_id", "MAE", "MSE", "RMSE", 'R2', "Pearson_Correlation", "Accuracy", "F1-Score"]
 
         # if header exists
@@ -484,7 +506,7 @@ class AutoBuild():
                 # write the header
                 writer.writerow(header)
             for index, rows in test.iterrows():
-                data = ["test", dataset.challenge,str(self.balance_class), dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
+                data = ["test", dataset.challenge, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
                         rows["model"], rows["MAE"], rows["MSE"], rows["RMSE"], rows["R2"], rows["Pearson_Correlation"], rows["Accuracy"], rows["F1-Score"]]
                 # write the data
                 writer.writerow(data)

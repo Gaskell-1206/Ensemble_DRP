@@ -31,6 +31,8 @@ def tune_models(dataset_parms, fixed_model_params,test_model_parms, method,proje
         aml = EvaluationModule.AutoBuild(seed=dataset.random_state, project_name=project_name, challenge=dataset.challenge, balance_class=ballance_class)
         for mod in list(fixed_model_params.keys()):
             temp=model(**fixed_model_params[mod])
+            print("base "+temp.model_list[0]+"Done")
+            aml.validate(model_id="base "+temp.model_list[0], estimator=temp.model,trainset=train,testset=test)
             temp.hyper_parameter_tune(method=method,dataset=dataset,params=test_model_parms[mod])
             aml.validate(model_id=temp.model_id, estimator=temp.model,trainset=train,testset=test)
         aml.validation_output(dataset=dataset,output=output)
@@ -85,6 +87,7 @@ class model():
         self.random_state=random_state
         self.challenge=challenge
         self.model_id=model_id
+        self.model_list=model_list
         if(ensamble):
             self.model=make_ensamble(model_list, base_model_params, ensamble_type, model_id, meta_learner, meta_learner_params, hyper_parameters, challenge).model
         else:
@@ -94,6 +97,7 @@ class model():
            scoring = "f1_weighted"
         else:
             scoring= "neg_mean_squared_error"
+            ## look into the cv. try stratfied k fold. 
         model=sklearn.model_selection.RandomizedSearchCV(estimator=self.model,param_distributions=params,random_state=self.random_state, scoring=scoring)
         train=dataset.get_train()[0]
         test= dataset.get_test()[0]

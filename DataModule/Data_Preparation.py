@@ -53,7 +53,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                  dataset: Optional[Callable] = 'CORRONA CERTAIN',
                  process_approach: Optional[Callable] = 'KVB',
                  imputation: Optional[Callable] = 'KNN',
-                 patient_group: Optional[Callable] = 'all',
+                 patient_group: Optional[Callable] = ['bionaive TNF'],
                  drug_group: Optional[Callable] = 'all',
                  time_points: Optional[Callable] = (0, 3),
                  train_test_rate: float = 0.8,
@@ -83,9 +83,10 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                 'challenge should be either "regression", "regression_delta", "regression_delta_binary", "classification", or "binary_classification"')
         if process_approach not in ("KVB", "SC"):
             raise ValueError('process_approach should be either "KVB" or "SC"')
-        if patient_group not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
-            raise ValueError(
-                'patient_group should be either "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"')
+        for patient_group_ in patient_group:
+            if patient_group_ not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
+                raise ValueError(
+                    'patient_group should be either "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"')
         if drug_group not in ("all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"):
             raise ValueError(
                 'drug_group should be "all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"')
@@ -103,6 +104,17 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df_all = pd.read_csv(self.library_root / library_name)
             df_3M = pd.read_csv(self.library_root /
                                 'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
+        
+        if challenge == "regression":
+            self.target = "DAS28_CRP_3M"
+        elif challenge == "regression_delta" or challenge == "regression_delta_binary":
+            self.target = "delta"
+        elif challenge == "classification":
+            self.target = "DrugResponse"
+        elif challenge == "binary_classification":
+            self.target = "DrugResponse_binary"
+        else:
+            self.target = ""
 
         self.categorical = ["grp", "init_group", "gender", "final_education",
                             "race_grp", "ethnicity", "newsmoker", "drinker", "ara_func_class"]
@@ -224,7 +236,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
     def split_data(self, df):
         # data filter
         if (self.patient_group != 'all') & (self.patient_group != 'KVB'):
-            df = df[df['init_group'] == self.patient_group]
+            df = df[df['init_group'].isin(self.patient_group)]
         if len(self.sample_list) > 0:
             if self.verbose > 0:
                 print(self.sample_list)
