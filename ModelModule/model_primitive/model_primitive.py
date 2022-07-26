@@ -5,6 +5,7 @@ from sklearn import ensemble
 from sklearn import tree 
 from sklearn import model_selection
 import xgboost as xgb
+import pickle
 class model_primitive():
     def __init__(self,model_list,base_model_params=[],model_id="",challenge="Regression"):
         if challenge not in ('Regression', 'Classification'):
@@ -33,4 +34,3 @@ class model_primitive():
             models['XGBoost']=xgb.XGBClassifier()
             models['Tree']=tree.DecisionTreeClassifier()
         self.model_dict=models
-        

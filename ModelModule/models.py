@@ -9,6 +9,10 @@ from DataModule.Data_Preparation import CoronnaCERTAINDataset
 import os
 import sys
 import EvaluationModule
+from sklearn.model_selection import (KFold, RepeatedKFold,
+                                     RepeatedStratifiedKFold, ShuffleSplit,
+                                     StratifiedKFold)
+
 directory = os.getcwd()
 sys.path.append(directory)
 path='../Dataset'
@@ -16,8 +20,26 @@ import warnings
 warnings.filterwarnings("ignore")
 import tqdm
 import sklearn.model_selection
+import pickle
+
+
+
 
 def tune_models(dataset_parms, fixed_model_params,test_model_parms, method,project_name,ballance_class, output='../leaderboard/'):
+        """"
+        dataset_params (dict)- (atribute:value)
+        fixed model parms( dict)- (model:(atribute:vales))
+        test model parms( dict)- (model:(atribute:vales))
+        method (string)- random or grid
+        output: for now (list) of tuned models.
+        """
+        output=[]
+        for ballance in ballance_class:
+            for task in dataset_parms:
+                output.append(tune_model_singluar(dataset_parms=task, fixed_model_params=fixed_model_params,test_model_parms=test_model_parms, method=method,project_name=project_name,ballance_class=ballance, output='../leaderboard/')       
+                )
+
+def tune_model_singluar(dataset_parms, fixed_model_params,test_model_parms, method,project_name,ballance_class, output='../leaderboard/'):
         """"
         dataset_params (dict)- (atribute:value)
         fixed model parms( dict)- (model:(atribute:vales))
@@ -35,6 +57,7 @@ def tune_models(dataset_parms, fixed_model_params,test_model_parms, method,proje
             aml.validate(model_id="base "+temp.model_list[0], estimator=temp.model,trainset=train,testset=test)
             temp.hyper_parameter_tune(method=method,dataset=dataset,params=test_model_parms[mod])
             aml.validate(model_id=temp.model_id, estimator=temp.model,trainset=train,testset=test)
+            temp.save_model()
         aml.validation_output(dataset=dataset,output=output)
         aml.test_output(dataset=dataset,output=output)
         return aml
@@ -98,7 +121,7 @@ class model():
         else:
             scoring= "neg_mean_squared_error"
             ## look into the cv. try stratfied k fold. 
-        model=sklearn.model_selection.RandomizedSearchCV(estimator=self.model,param_distributions=params,random_state=self.random_state, scoring=scoring)
+        model=sklearn.model_selection.RandomizedSearchCV(estimator=self.model,param_distributions=params, scoring=scoring,cv=3)
         train=dataset.get_train()[0]
         test= dataset.get_test()[0]
         X_train = train.iloc[:,:-1]
@@ -106,6 +129,7 @@ class model():
         X_test = test.iloc[:,:-1]
         y_test = test.iloc[:,-1]
         self.model=model.fit(X_train,y_train).best_estimator_
+        print("best_params:",model.best_params_)
 
     def grid_search_model(self,params,dataset):
         if(self.challenge=="Reggression"):
@@ -121,6 +145,7 @@ class model():
         X_test = test.iloc[:,:-1]
         y_test = test.iloc[:,-1]
         self.model=model.fit(X_train,y_train).best_estimator_
+        print("best_params:",model.best_params_)
     def hyper_parameter_tune(self,params,method,dataset):
         train=dataset.get_train()[0]
         test= dataset.get_test()[0]
@@ -132,3 +157,6 @@ class model():
             self.random_search_model(params=params,dataset=dataset)
         else:
             self.grid_search_model(params=params,dataset=dataset)
+    def save_model(self,path=r'../Saved_Models/'):
+        filename=path+self.model_id+'.sav'
+        pickle.dump(self.model, open(filename, 'wb'))

@@ -196,14 +196,14 @@ class AutoBuild():
                     y_train = y.iloc[train_index]
                     X_val = X.iloc[test_index, :-1]
                     y_val = X.iloc[test_index, -1]
-                    print("before sampling:", y_train.value_counts())
+                   # print("before sampling:", y_train.value_counts())
                     # print("class y_val:",y.iloc[test_index].value_counts())
                     # resample = SMOTEENN(enn=EditedNearestNeighbours(
                     #     sampling_strategy='auto', n_neighbors=3))
                     resample = SMOTETomek(
                         tomek=TomekLinks(sampling_strategy='auto'))
                     X_train, y_train = resample.fit_resample(X_train, y_train)
-                    print("after sampling:", y_train.value_counts())
+              #      print("after sampling:", y_train.value_counts())
                     X_train = X_train.iloc[:, :-1]
                     y_train = X_train.iloc[:, -1]
                     # print("after sampling:",y_train)
@@ -237,7 +237,7 @@ class AutoBuild():
                         X_for_stat.loc[:, self.target] = y_train
                         y_pseudo_label = X_for_stat.apply(lambda row: self.responseClassify(
                             row, 'DAS28_CRP_0M', self.target), axis=1)
-                    print("after sampling:", y_pseudo_label.value_counts())
+                   # print("after sampling:", y_pseudo_label.value_counts())
 
                     X_val = X.iloc[test_index, :-1]
                     y_val = X.iloc[test_index, -1]
