@@ -25,14 +25,12 @@ def test_hyper_parameters(parameters, train,test,dataset, aml, name_list=[],outp
             model_is=str(grid[params])
         else:
             model_id=name_list[params]
-        if "challenge" in list(grid[params].keys()):
-           
+        if "challenge" in list(grid[params].keys()):   
             model=make_model(model_id=model_id, challenge=grid[params]["challenge"], model_list=grid[params]["model_list"]).model
             del grid[params]["challenge"]
         else:
         
            model=make_model(model_id=model_id, model_list=grid[params]["model_list"]).model
-        
         del grid[params]["model_list"]
         model.set_params(**grid[params])
         aml.validate(model_id=model_id, estimator=model, trainset=train, testset=test)
@@ -41,7 +39,7 @@ def test_hyper_parameters(parameters, train,test,dataset, aml, name_list=[],outp
     # aml.test_output(dataset=dataset,output=output)
 
 class make_model(model_primitive):
-    def __init__(self,model_id,model_list,base_model_params=[],challenge="Regression"):
+    def __init__(self,model_id,model_list,base_model_params=[],challenge="Regression", h20=True):
         temp=dict()
         for i in range(len(model_list)):
             if(i>=len(base_model_params)):
@@ -51,7 +49,7 @@ class make_model(model_primitive):
         ## intitlizing atrivutes    
         self.base_model_list=model_list
 
-        model_primitive.__init__(self,model_id,model_list,base_model_params,challenge)
+        model_primitive.__init__(self,model_id,model_list,base_model_params,challenge, h20)
         #if(len(self.base_model_list)!=1):
         #    raise ValueError("lenght of model list is ", len(self.base_model_list), "not 1")
         for model in self.base_model_list:

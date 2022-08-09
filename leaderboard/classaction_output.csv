@@ -1,0 +1,94 @@
+dataset,challenge,balance_class,process_approach,imputation,patient_group,drug_group,train_test_rate,remove_low_DAS,random_state,model_id,MAE,MSE,RMSE,R2,Pearson_Correlation,Accuracy,F1-Score
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.375,0.36923076923076925
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4166666666666667,0.40401002506265665
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.25,0.239250085999312
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.46498599439775906
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4166666666666667,0.41005291005291006
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.34782608695652173,0.3499999999999999
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4782608695652174,0.48148148148148157
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.43478260869565216,0.4236874236874237
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.30434782608695654,0.30256410256410254
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.43478260869565216,0.4126984126984126
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.43492063492063493
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.4028985507246377
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.375,0.3563909774436091
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5416666666666666,0.5351097704038881
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.2916666666666667,0.2450980392156863
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5652173913043478,0.5582579185520362
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.391304347826087,0.34848484848484845
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4782608695652174,0.443859649122807
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.2608695652173913,0.2547134238310709
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.2608695652173913,0.18181818181818185
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.2916666666666667,0.29971988795518206
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.45667839785486847
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.3333333333333333,0.31768145854833163
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.3333333333333333,0.3267195767195767
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.375,0.3323013415892673
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.391304347826087,0.39066293183940237
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.34782608695652173,0.35727752639517346
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.30434782608695654,0.2878787878787879
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5652173913043478,0.5643323996265174
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.391304347826087,0.3938375350140056
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.20833333333333334,0.18614718614718617
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4583333333333333,0.43956043956043955
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.375,0.35714285714285715
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4166666666666667,0.4204248366013072
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5,0.4857142857142857
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.21739130434782608,0.2068376068376068
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.43478260869565216,0.42849002849002843
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.37368421052631584
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.34782608695652173,0.3396011396011396
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.37566137566137564
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5416666666666666,0.4833862433862434
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5,0.4366744366744367
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2916666666666667,0.2888888888888889
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5,0.4818359028885344
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.25,0.23148148148148148
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4782608695652174,0.46776018099547517
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.35930735930735924
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.43478260869565216,0.4285714285714286
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.30434782608695654,0.3035444947209653
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2608695652173913,0.1904761904761905
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2916666666666667,0.2888888888888889
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4166666666666667,0.4053963465728172
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2916666666666667,0.277861571979219
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.375,0.373202614379085
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4583333333333333,0.4229446164430684
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.3862433862433863
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.34782608695652173,0.345211161387632
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.30434782608695654,0.2878787878787879
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.39166666666666666
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.43478260869565216,0.4232804232804233
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.375,0.3443362193362194
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5,0.4777777777777778
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.375,0.3703703703703704
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4166666666666667,0.4257703081232493
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4583333333333333,0.4523809523809524
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.21739130434782608,0.20634920634920637
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.43478260869565216,0.4236874236874237
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.43478260869565216,0.42063492063492064
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.43478260869565216,0.42483660130718953
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4782608695652174,0.4723646723646724
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5416666666666666,0.487037037037037
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5,0.4666666666666666
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.3333333333333333,0.3089133089133089
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4583333333333333,0.4446693657219973
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.375,0.3148148148148148
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.43478260869565216,0.42782446311858074
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.391304347826087,0.34432234432234426
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4782608695652174,0.4556938159879336
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.30434782608695654,0.28703703703703703
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.30434782608695654,0.22519509476031216
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.2916666666666667,0.2870915032679739
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4166666666666667,0.40940170940170945
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.3333333333333333,0.3140173666489456
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.375,0.3637566137566138
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4583333333333333,0.4229446164430684
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5217391304347826,0.5168091168091168
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.34782608695652173,0.3511904761904762
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.30434782608695654,0.29776021080368903
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5217391304347826,0.5185185185185186
+validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.391304347826087,0.39166666666666666
+test,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4161849710982659,0.3900847803418415
+test,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4161849710982659,0.3900847803418415
+test,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4161849710982659,0.3900847803418415

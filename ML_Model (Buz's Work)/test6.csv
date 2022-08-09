@@ -1,0 +1,20 @@
+tender_jts_28,
+	,non-null, 410(100.0),
+	,null, 0(0.0),
+
+swollen_jts_28,
+	,non-null, 410(100.0),
+	,null, 0(0.0),
+
+usresultsCRP,
+	,non-null, 402(98.04878048780488),
+	,null, 8(1.951219512195122),
+
+md_global_assess,
+	,non-null, 410(100.0),
+	,null, 0(0.0),
+
+pt_global_assess,
+	,non-null, 409(99.7560975609756),
+	,null, 1(0.24390243902439024),
+

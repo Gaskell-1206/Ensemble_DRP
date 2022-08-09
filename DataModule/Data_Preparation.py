@@ -418,11 +418,15 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         return self.df.iloc[i]
 
     def get_train(self):
-        return self.df_train.drop(["dataset"],axis=1), self.train_csv_loc
-
+        if "dataset" in self.df_train.columns:
+            return self.df_train.drop(["dataset"],axis=1), self.train_csv_loc
+        return self.df_train, self.train_csv_loc
+            
     def get_test(self):
-        return self.df_test.drop(["dataset"],axis=1), self.test_csv_loc
-
+        if "dataset" in self.df_test.columns:
+            return self.df_test.drop(["dataset"],axis=1), self.test_csv_loc
+        return self.df_test, self.test_csv_loc
+        
 # dataset = CoronnaCERTAINDataset(
 #     library_root='/Users/gaskell/Dropbox/Mac/Desktop/Autoimmune_Disease/Code/ML_RA_EHR/Dataset/',
 #     challenge="regression",

@@ -19,7 +19,7 @@ from sklearn.model_selection import (KFold, RepeatedKFold,
 
 import h2o
 from h2o.automl import H2OAutoML
-
+import ModelModule.models as models
 
 def R2(true, pred):
     return metrics.r2_score(true, pred)
@@ -149,7 +149,8 @@ class AutoBuild():
         else:
             return 2
 
-    def validate(self, model_id, estimator, trainset, testset):
+    def validate(self, model_id, estimator, trainset, testset,h20=True, model_params=None):
+        print("mdoel params are ", model_params)
         X = trainset.iloc[:, :-1]
         y = trainset.iloc[:, -1]
         balance_class = self.balance_class
@@ -162,7 +163,7 @@ class AutoBuild():
                     X.loc[:, self.target] = y
                     y = X.apply(lambda row: self.responseClassify_binary(
                         row, 'DAS28_CRP_0M', self.target), axis=1)
-                elif self.challenge == 'regression':
+                elif self.challenge == 'regression' or self.challenge == 'regression_delta':
                     X.loc[:, self.target] = y
                     y = X.apply(lambda row: self.responseClassify(
                         row, 'DAS28_CRP_0M', self.target), axis=1)
@@ -185,8 +186,9 @@ class AutoBuild():
                 # cv = KFold(n_splits=10, shuffle=True, random_state=self.seed)
 
             else:
-                cv = RepeatedKFold(n_splits=10, n_repeats=3,
-                                   random_state=self.seed)
+                cv = RepeatedKFold(
+                     n_splits=10, n_repeats=3, random_state=self.seed)
+                    #n_splits=10, n_repeats=3,SSSSrandom_state=self.seed)
 
             cv = cv.split(X, y)
 
@@ -248,8 +250,33 @@ class AutoBuild():
                     y_train, y_val = y.iloc[train_index], y.iloc[test_index]
 
                 # summarize train and test composition
-                estimator.fit(X_train, y_train)
+                if(h20):
+                    train=X_train
+                    val=X_val
+                    train[self.target]=y_train
+                    val[self.target]=y_val
+                    train.to_csv('../Dataset/temp.csv')
+                    train_h2o = h2o.upload_file('../Dataset/temp.csv')
+                    train_h2o.drop(['C1'], axis=1)
+                    x = train_h2o.columns[:-1]
+                    y_h20 = self.target
+                    for feature in ['grp','init_group','gender','final_education','race_grp','ethnicity','newsmoker','drinker','ara_func_class']:
+                        train_h2o[feature] = train_h2o[feature].asfactor()
+                    #train_h2o[y_h20] = train_h2o[y_h20].asfactor()
 
+                    if(model_params!=None):
+                        a=list(model_params.values())[0]
+                        if("dataset_parms" in a.keys()):
+                            del a["dataset_parms"]
+                        frame=train_h2o
+                        estimator=models.model(dataset_parms=None,frame=frame,**a).model
+                    else:
+                        frame=train_h2o
+                        estimator=models.model(dataset_parms=None,frame=frame).model
+                    estimator.train(x=x, y=y_h20, training_frame=train_h2o)
+                else:
+                    estimator.fit(X_train, y_train)
+                
                 working_set = X_train
                 working_set[self.target] = y_train.values
                 self.evaluate(model_id, estimator, "train",
@@ -261,6 +288,7 @@ class AutoBuild():
 
         elif "classification" in self.challenge:
             cv = RepeatedStratifiedKFold(
+                #n_splits=10, n_repeats=3, random_state=self.seed)
                 n_splits=10, n_repeats=3, random_state=self.seed)
             cv = cv.split(X, y)
 
@@ -273,8 +301,30 @@ class AutoBuild():
                     tomek=TomekLinks(sampling_strategy='auto'))
                 X_train, y_train = resample.fit_resample(X_train, y_train)
                 # print("after balancing class:", y_train.value_counts())
-                estimator.fit(X_train, y_train)
-
+                if(h20):
+                    train=X_train
+                    val=X_val
+                    train[self.target]=y_train
+                    val[self.target]=y_val
+                    train.to_csv('../Dataset/temp.csv')
+                    train_h2o = h2o.upload_file('../Dataset/temp.csv')
+                    train_h2o.drop(['C1'], axis=1)
+                    x = train_h2o.columns[:-1]
+                    y_h20 = self.target
+                    for feature in ['grp','init_group','gender','final_education','race_grp','ethnicity','newsmoker','drinker','ara_func_class']:
+                        train_h2o[feature] = train_h2o[feature].asfactor()
+                    train_h2o[y_h20] = train_h2o[y_h20].asfactor()
+                    if(model_params!=None):
+                        a=list(model_params.values())[0]
+                        if("dataset_parms" in a.keys()):
+                            del a["dataset_parms"]
+                        #del a['frame']
+                        frame=train_h2o
+                        estimator=models.model(dataset_parms=None,frame=frame,**a).model
+                    estimator.train(x=x, y=y_h20, training_frame=train_h2o)
+                else:
+                    estimator.fit(X_train, y_train)
+                
                 working_set = X_train
                 working_set[self.target] = y_train.values
                 self.evaluate(model_id, estimator, "train",
@@ -285,9 +335,27 @@ class AutoBuild():
                               working_set, self.val_perf)
 
         # use all data in trainset to train model and testset to evaluate performance
-        X = trainset.iloc[:, :-1]
-        y = trainset.iloc[:, -1]
-        estimator.fit(X, y)
+        if(h20):
+            trainset.to_csv('../Dataset/temp2.csv')
+            train_h2o = h2o.upload_file('../Dataset/temp2.csv')
+            train_h2o.drop(['C1'], axis=1)
+            x = train_h2o.columns[:-1]
+            y_h20 = self.target
+            for feature in ['grp','init_group','gender','final_education','race_grp','ethnicity','newsmoker','drinker','ara_func_class']:
+                train_h2o[feature] = train_h2o[feature].asfactor()
+            if ("classification" in self.challenge):
+                train_h2o[y_h20] = train_h2o[y_h20].asfactor()
+            if(model_params!=None):
+                a=list(model_params.values())[0]
+                if("dataset_parms" in a.keys()):
+                    del a["dataset_parms"]
+                frame=train_h2o
+                estimator=models.model(dataset_parms=None,frame=frame,**a).model
+            estimator.train(x=x, y=y_h20, training_frame=train_h2o)
+        else:
+            X = trainset.iloc[:, :-1]
+            y = trainset.iloc[:, -1]
+            estimator.fit(X, y)
         self.evaluate(model_id, estimator, "test", testset, self.test_perf)
 
     # def validate_h2o(self, model_id, estimators, trainset, testset):
@@ -295,14 +363,22 @@ class AutoBuild():
     def evaluate(self, model_id, model, dataset, working_set, save_df):
         X = working_set.drop(columns=self.target)
         true = working_set[self.target]
-        pred = model.predict(X)
+        if(h2o):
+            X.to_csv('../Dataset/X'+str(dataset)+'.csv')
+            X_h2o = h2o.upload_file('../Dataset/X'+str(dataset)+'.csv')
+            for feature in ['grp','init_group','gender','final_education','race_grp','ethnicity','newsmoker','drinker','ara_func_class']:
+                        X_h2o[feature] = X_h2o[feature].asfactor()
+            print(str(dataset))
+            pred=model.predict(X_h2o).as_data_frame()
+        else:
+            pred = model.predict(X)
         baseline = working_set['DAS28_CRP_0M']
 
         baseline, true, pred = np.array(
-            baseline), np.array(true), np.array(pred)
+            baseline), np.array(true), np.array(pred)[:,0]
         assert len(baseline) == len(true)
         assert len(true) == len(pred)
-
+        
         df = pd.DataFrame(list(zip(baseline, true, pred)),
                           columns=['baseline', 'true', 'pred'])
 
@@ -343,6 +419,7 @@ class AutoBuild():
                                                F1_Score(classification_true, classification_pred)]
 
         elif "classification" in self.challenge:
+           # return true, pred
             save_df.loc[len(save_df.index)] = [model_id,
                                                None,
                                                None,
@@ -459,7 +536,7 @@ class AutoBuild():
     def validation_output(self, dataset, output='../leaderboard/'):
         validation = self.val_perf
         path = os.path.join(output, f'{self.project_name}_output.csv')
-        header = ["dataset", "challenge", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
+        header = ["dataset", "challenge","balance_class", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
                   "model_id", "MAE", "MSE", "RMSE", 'R2', "Pearson_Correlation", "Accuracy", "F1-Score"]
 
         # if header exists
@@ -478,7 +555,7 @@ class AutoBuild():
                 # write the header
                 writer.writerow(header)
             for index, rows in validation.iterrows():
-                data = ["validation", dataset.challenge, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
+                data = ["validation", dataset.challenge,self.balance_class, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
                         rows["model"], rows["MAE"], rows["MSE"], rows["RMSE"], rows["R2"], rows["Pearson_Correlation"], rows["Accuracy"], rows["F1-Score"]]
                 # write the data
                 writer.writerow(data)
@@ -487,7 +564,7 @@ class AutoBuild():
         test = self.test_perf
         path = os.path.join(output, f'{self.project_name}_output.csv')
 
-        header = ["dataset", "challenge", "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
+        header = ["dataset", "challenge",'balance_class', "process_approach", "imputation", "patient_group", "drug_group", "train_test_rate", "remove_low_DAS", "random_state",
                   "model_id", "MAE", "MSE", "RMSE", 'R2', "Pearson_Correlation", "Accuracy", "F1-Score"]
 
         # if header exists
@@ -506,7 +583,7 @@ class AutoBuild():
                 # write the header
                 writer.writerow(header)
             for index, rows in test.iterrows():
-                data = ["test", dataset.challenge, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
+                data = ["test", dataset.challenge,self.balance_class, dataset.process_approach, dataset.imputation, dataset.patient_group, dataset.drug_group, dataset.train_test_rate, dataset.remove_low_DAS, dataset.random_state,
                         rows["model"], rows["MAE"], rows["MSE"], rows["RMSE"], rows["R2"], rows["Pearson_Correlation"], rows["Accuracy"], rows["F1-Score"]]
                 # write the data
                 writer.writerow(data)
