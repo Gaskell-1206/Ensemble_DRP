@@ -1,0 +1,466 @@
+,dataset,challenge,balance_class,process_approach,imputation,patient_group,drug_group,train_test_rate,remove_low_DAS,random_state,model_id,MAE,MSE,RMSE,R2,Pearson_Correlation,Accuracy,F1-Score
+0,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6666666666666666,0.5555555555555556
+1,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.7083333333333334,0.5872235872235873
+2,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6666666666666666,0.4947368421052631
+3,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.8333333333333334,0.7
+4,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.7083333333333334,0.5872235872235873
+5,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6956521739130435,0.5818181818181818
+6,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6086956521739131,0.4623376623376622
+7,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6521739130434783,0.4888888888888889
+8,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.391304347826087,0.28125
+9,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6956521739130435,0.5818181818181818
+10,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6666666666666666,0.5555555555555556
+11,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.7083333333333334,0.4146341463414634
+12,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.625,0.4692874692874692
+13,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5,0.3333333333333333
+14,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.625,0.4692874692874692
+15,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5652173913043478,0.3611111111111111
+16,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.7391304347826086,0.6617647058823529
+17,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.7391304347826086,0.5460526315789473
+18,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6086956521739131,0.5801217038539555
+19,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.7391304347826086,0.5460526315789473
+20,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.625,0.4692874692874692
+21,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.75,0.55
+22,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.3142857142857143
+23,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.75,0.6210526315789474
+24,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6666666666666666,0.3999999999999999
+25,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6956521739130435,0.5818181818181818
+26,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6086956521739131,0.5174825174825174
+27,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.7391304347826086,0.5460526315789473
+28,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5652173913043478,0.4866071428571429
+29,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5652173913043478,0.4866071428571429
+30,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.625,0.3846153846153846
+31,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.7083333333333334,0.5872235872235873
+32,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6666666666666666,0.4947368421052631
+33,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.8333333333333334,0.7
+34,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.7083333333333334,0.5872235872235873
+35,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6086956521739131,0.5174825174825175
+36,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6521739130434783,0.4888888888888889
+37,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6521739130434783,0.4888888888888889
+38,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6086956521739131,0.3783783783783783
+39,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6521739130434783,0.5490196078431373
+40,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.625,0.5252747252747252
+41,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.75,0.4285714285714285
+42,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.625,0.4692874692874692
+43,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5416666666666666,0.4197802197802198
+44,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.625,0.5252747252747252
+45,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5217391304347826,0.3428571428571428
+46,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6956521739130435,0.6247086247086248
+47,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.782608695652174,0.6546546546546546
+48,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6086956521739131,0.5801217038539555
+49,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.7391304347826086,0.5460526315789473
+50,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6666666666666666,0.4947368421052631
+51,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.75,0.6210526315789474
+52,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4583333333333333,0.3142857142857143
+53,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.7916666666666666,0.6581196581196581
+54,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6666666666666666,0.3999999999999999
+55,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6521739130434783,0.4888888888888889
+56,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6521739130434783,0.5490196078431373
+57,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.7391304347826086,0.5460526315789473
+58,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4782608695652174,0.4249999999999999
+59,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6086956521739131,0.5174825174825174
+60,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.625,0.3846153846153846
+61,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.625,0.5252747252747252
+62,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.7083333333333334,0.5213675213675213
+63,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.8333333333333334,0.7
+64,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.7083333333333334,0.5872235872235873
+65,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6521739130434783,0.5490196078431372
+66,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6521739130434783,0.4888888888888889
+67,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6521739130434783,0.4888888888888889
+68,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.391304347826087,0.28125
+69,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6086956521739131,0.5174825174825174
+70,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6666666666666666,0.4947368421052631
+71,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.625,0.3846153846153846
+72,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6666666666666666,0.5555555555555556
+73,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4583333333333333,0.3696969696969696
+74,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5833333333333334,0.4957983193277311
+75,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5652173913043478,0.3611111111111111
+76,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.7391304347826086,0.6617647058823529
+77,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.782608695652174,0.6546546546546546
+78,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6521739130434783,0.6166666666666667
+79,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.782608695652174,0.6546546546546546
+80,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.75,0.55
+81,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.7083333333333334,0.5213675213675213
+82,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4583333333333333,0.3142857142857143
+83,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.7083333333333334,0.5872235872235873
+84,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.625,0.3846153846153846
+85,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6956521739130435,0.5818181818181818
+86,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6086956521739131,0.5174825174825174
+87,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6956521739130435,0.5165165165165164
+88,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6086956521739131,0.4623376623376622
+89,validation,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5652173913043478,0.4866071428571429
+90,test,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.6994219653179191,0.5241218789674144
+91,test,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.6994219653179191,0.5241218789674144
+92,test,binary_classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.6994219653179191,0.5241218789674144
+0,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.375,0.3692307692307692
+1,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4166666666666667,0.4040100250626566
+2,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.25,0.239250085999312
+3,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.464985994397759
+4,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4166666666666667,0.41005291005291
+5,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.3478260869565217,0.3499999999999999
+6,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4782608695652174,0.4814814814814815
+7,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4347826086956521,0.4236874236874237
+8,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.3043478260869565,0.3025641025641025
+9,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4347826086956521,0.4126984126984126
+10,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.4349206349206349
+11,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.4028985507246377
+12,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.375,0.3563909774436091
+13,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5416666666666666,0.5351097704038881
+14,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.2916666666666667,0.2450980392156863
+15,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5652173913043478,0.5582579185520362
+16,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.391304347826087,0.3484848484848484
+17,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4782608695652174,0.443859649122807
+18,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.2608695652173913,0.2547134238310709
+19,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.2608695652173913,0.1818181818181818
+20,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.2916666666666667,0.299719887955182
+21,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4583333333333333,0.4566783978548684
+22,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.3333333333333333,0.3176814585483316
+23,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.3333333333333333,0.3267195767195767
+24,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.375,0.3323013415892673
+25,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.391304347826087,0.3906629318394023
+26,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.3478260869565217,0.3572775263951734
+27,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.3043478260869565,0.2878787878787879
+28,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.5652173913043478,0.5643323996265174
+29,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.391304347826087,0.3938375350140056
+30,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2083333333333333,0.1861471861471861
+31,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4583333333333333,0.4395604395604395
+32,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.375,0.3571428571428571
+33,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4166666666666667,0.4204248366013072
+34,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5,0.4857142857142857
+35,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.217391304347826,0.2068376068376068
+36,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4347826086956521,0.4284900284900284
+37,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.3736842105263158
+38,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.3478260869565217,0.3396011396011396
+39,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.3756613756613756
+40,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5416666666666666,0.4833862433862434
+41,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5,0.4366744366744367
+42,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2916666666666667,0.2888888888888889
+43,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.5,0.4818359028885344
+44,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.25,0.2314814814814814
+45,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4782608695652174,0.4677601809954751
+46,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.3593073593073592
+47,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4347826086956521,0.4285714285714286
+48,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.3043478260869565,0.3035444947209653
+49,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2608695652173913,0.1904761904761905
+50,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2916666666666667,0.2888888888888889
+51,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4166666666666667,0.4053963465728172
+52,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.2916666666666667,0.277861571979219
+53,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.375,0.373202614379085
+54,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4583333333333333,0.4229446164430684
+55,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.3862433862433863
+56,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.3478260869565217,0.345211161387632
+57,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.3043478260869565,0.2878787878787879
+58,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.391304347826087,0.3916666666666666
+59,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4347826086956521,0.4232804232804233
+60,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.375,0.3443362193362194
+61,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5,0.4777777777777778
+62,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.375,0.3703703703703704
+63,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4166666666666667,0.4257703081232493
+64,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4583333333333333,0.4523809523809524
+65,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.217391304347826,0.2063492063492063
+66,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4347826086956521,0.4236874236874237
+67,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4347826086956521,0.4206349206349206
+68,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4347826086956521,0.4248366013071895
+69,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4782608695652174,0.4723646723646724
+70,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5416666666666666,0.487037037037037
+71,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5,0.4666666666666666
+72,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.3333333333333333,0.3089133089133089
+73,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4583333333333333,0.4446693657219973
+74,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.375,0.3148148148148148
+75,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4347826086956521,0.4278244631185807
+76,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.391304347826087,0.3443223443223442
+77,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4782608695652174,0.4556938159879336
+78,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.3043478260869565,0.287037037037037
+79,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.3043478260869565,0.2251950947603121
+80,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.2916666666666667,0.2870915032679739
+81,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4166666666666667,0.4094017094017094
+82,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.3333333333333333,0.3140173666489456
+83,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.375,0.3637566137566138
+84,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4583333333333333,0.4229446164430684
+85,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5217391304347826,0.5168091168091168
+86,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.3478260869565217,0.3511904761904762
+87,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.3043478260869565,0.297760210803689
+88,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.5217391304347826,0.5185185185185186
+89,validation,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.391304347826087,0.3916666666666666
+90,test,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,,,,,,0.4161849710982659,0.3900847803418415
+91,test,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,,,,,,0.4161849710982659,0.3900847803418415
+92,test,classification,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,,,,,,0.4161849710982659,0.3900847803418415
+0,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8793817961006489,1.0375334170981574,1.0185938430494057,0.4009271494404288,0.7564976125500107,0.3333333333333333,0.2638888888888889
+1,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1147004267066227,1.7071050292104026,1.30656229442396,0.1726823438002208,0.4546771930122139,0.3333333333333333,0.3101010101010101
+2,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.6681907625491478,0.9152563540201616,0.9566903124941538,0.3656325448928352,0.63353913451982,0.5833333333333334,0.35650623885918
+3,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9237150954439284,1.199730427464336,1.095322065633819,-0.0061742129531694,0.2675700843200629,0.2916666666666667,0.2314814814814814
+4,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0288026915024564,1.6887465591569468,1.2995178179451587,-0.29438795357085,0.0408996650299661,0.375,0.3476190476190476
+5,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7866279855384141,1.053574568329882,1.0264378053880725,-0.2215625440244826,0.2015070501663781,0.391304347826087,0.3352326685660018
+6,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8472850611646561,1.1936390669859025,1.0925379018532502,-0.1199542584182806,0.3318338037747907,0.6086956521739131,0.5416666666666666
+7,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.2044599750246772,1.9753989879865617,1.4054888786420765,-0.4783296085183419,0.075026493704119,0.4782608695652174,0.4051282051282051
+8,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.060847812646049,1.6891261349044318,1.2996638545810342,0.1785158166024157,0.4465252130656788,0.391304347826087,0.2933333333333333
+9,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9349419084048124,1.321264875568652,1.149462863936305,0.2807998532254846,0.5917058358834485,0.3043478260869565,0.2307692307692307
+10,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8404178710671767,0.947060411542377,0.9731702890770848,0.2588839950080842,0.5736466950023289,0.5416666666666666,0.5343358395989976
+11,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0859646475949798,1.949324013693898,1.3961819414724923,-0.0997256893024709,0.2261607850332167,0.3333333333333333,0.2442528735632184
+12,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0135182520284538,1.6069664764173346,1.2676618146877086,0.006911333776031,0.4595075673481524,0.4166666666666667,0.3712820512820513
+13,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9252466335143856,1.2160638679382243,1.1027528589571756,0.0671733978145638,0.3085757609382452,0.375,0.3440016103059581
+14,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0062516370264547,1.6410914999498534,1.281050935735911,0.1187528919179432,0.4104357662943265,0.4166666666666667,0.3962703962703962
+15,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.963416212976797,1.4709101721099018,1.2128108558674358,0.0576437154765576,0.4765000304340966,0.391304347826087,0.3898692810457516
+16,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.6922841589206612,0.8267227133162475,0.9092429341579992,0.1151496996238231,0.4185078116620956,0.5652173913043478,0.5626984126984128
+17,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1240617169848934,1.6611850522663991,1.2888696800943062,-0.1911638381054794,0.0247925381019619,0.217391304347826,0.1555555555555555
+18,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.83431187311075,1.052243550110448,1.0257892327912437,0.1880141243573967,0.6203946195875231,0.4782608695652174,0.3333333333333333
+19,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9656101625977364,1.327691044783286,1.152254765571957,0.217804775395893,0.5036636490559524,0.4347826086956521,0.3395061728395062
+20,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0564804349519263,1.4604710382680717,1.2084994986627309,0.0016535553369914,0.3406837629703489,0.4166666666666667,0.3833147528799702
+21,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8274795828062901,1.2091940616152987,1.0996336033494514,-0.2365915551975361,0.1833355568668996,0.5,0.3806787082649152
+22,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9846451525696404,1.6983059123800528,1.3031906661651826,-0.208291000849764,-0.0032240882014953,0.4583333333333333,0.4074074074074074
+23,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9417661494456242,1.2465936228122214,1.1165095713034534,0.1392276022174388,0.5127839123055333,0.4166666666666667,0.4077618288144604
+24,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.021417063179496,1.5592358122938983,1.248693642289372,0.3295986536517467,0.6004756470079888,0.4583333333333333,0.4481481481481482
+25,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.2125001392792525,2.1697341194188824,1.4730017377514808,0.1082050147752621,0.3330491896749222,0.3043478260869565,0.236111111111111
+26,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9163928606431596,1.1714054603693145,1.0823148619368184,-0.0410373263380374,0.2973719249144489,0.4782608695652174,0.435024154589372
+27,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.856308522225595,1.115615084727931,1.0562268150013665,0.0784835377028849,0.4520892267332335,0.3478260869565217,0.2334455667789
+28,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7684191791001471,0.9624306320607616,0.9810354897050164,0.0842410835139219,0.4393884873807471,0.4347826086956521,0.3944258639910813
+29,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.016067960432773,1.3080773231858571,1.1437120805455616,0.2475572378051151,0.5646232906210208,0.391304347826087,0.3589225589225589
+30,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8793817961006489,1.0375334170981574,1.0185938430494057,0.4009271494404288,0.7564976125500107,0.3333333333333333,0.2638888888888889
+31,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1147004267066227,1.7071050292104026,1.30656229442396,0.1726823438002208,0.4546771930122139,0.3333333333333333,0.3101010101010101
+32,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.6681907625491478,0.9152563540201616,0.9566903124941538,0.3656325448928352,0.63353913451982,0.5833333333333334,0.35650623885918
+33,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9237150954439284,1.199730427464336,1.095322065633819,-0.0061742129531694,0.2675700843200629,0.2916666666666667,0.2314814814814814
+34,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0288026915024564,1.6887465591569468,1.2995178179451587,-0.29438795357085,0.0408996650299661,0.375,0.3476190476190476
+35,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7866279855384141,1.053574568329882,1.0264378053880725,-0.2215625440244826,0.2015070501663781,0.391304347826087,0.3352326685660018
+36,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8472850611646561,1.1936390669859025,1.0925379018532502,-0.1199542584182806,0.3318338037747907,0.6086956521739131,0.5416666666666666
+37,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.2044599750246772,1.9753989879865617,1.4054888786420765,-0.4783296085183419,0.075026493704119,0.4782608695652174,0.4051282051282051
+38,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.060847812646049,1.6891261349044318,1.2996638545810342,0.1785158166024157,0.4465252130656788,0.391304347826087,0.2933333333333333
+39,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9349419084048124,1.321264875568652,1.149462863936305,0.2807998532254846,0.5917058358834485,0.3043478260869565,0.2307692307692307
+40,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8404178710671767,0.947060411542377,0.9731702890770848,0.2588839950080842,0.5736466950023289,0.5416666666666666,0.5343358395989976
+41,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0859646475949798,1.949324013693898,1.3961819414724923,-0.0997256893024709,0.2261607850332167,0.3333333333333333,0.2442528735632184
+42,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0135182520284538,1.6069664764173346,1.2676618146877086,0.006911333776031,0.4595075673481524,0.4166666666666667,0.3712820512820513
+43,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9252466335143856,1.2160638679382243,1.1027528589571756,0.0671733978145638,0.3085757609382452,0.375,0.3440016103059581
+44,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0062516370264547,1.6410914999498534,1.281050935735911,0.1187528919179432,0.4104357662943265,0.4166666666666667,0.3962703962703962
+45,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.963416212976797,1.4709101721099018,1.2128108558674358,0.0576437154765576,0.4765000304340966,0.391304347826087,0.3898692810457516
+46,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.6922841589206612,0.8267227133162475,0.9092429341579992,0.1151496996238231,0.4185078116620956,0.5652173913043478,0.5626984126984128
+47,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1240617169848934,1.6611850522663991,1.2888696800943062,-0.1911638381054794,0.0247925381019619,0.217391304347826,0.1555555555555555
+48,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.83431187311075,1.052243550110448,1.0257892327912437,0.1880141243573967,0.6203946195875231,0.4782608695652174,0.3333333333333333
+49,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9656101625977364,1.327691044783286,1.152254765571957,0.217804775395893,0.5036636490559524,0.4347826086956521,0.3395061728395062
+50,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0564804349519263,1.4604710382680717,1.2084994986627309,0.0016535553369914,0.3406837629703489,0.4166666666666667,0.3833147528799702
+51,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8274795828062901,1.2091940616152987,1.0996336033494514,-0.2365915551975361,0.1833355568668996,0.5,0.3806787082649152
+52,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9846451525696404,1.6983059123800528,1.3031906661651826,-0.208291000849764,-0.0032240882014953,0.4583333333333333,0.4074074074074074
+53,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9417661494456242,1.2465936228122214,1.1165095713034534,0.1392276022174388,0.5127839123055333,0.4166666666666667,0.4077618288144604
+54,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.021417063179496,1.5592358122938983,1.248693642289372,0.3295986536517467,0.6004756470079888,0.4583333333333333,0.4481481481481482
+55,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.2125001392792525,2.1697341194188824,1.4730017377514808,0.1082050147752621,0.3330491896749222,0.3043478260869565,0.236111111111111
+56,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9163928606431596,1.1714054603693145,1.0823148619368184,-0.0410373263380374,0.2973719249144489,0.4782608695652174,0.435024154589372
+57,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.856308522225595,1.115615084727931,1.0562268150013665,0.0784835377028849,0.4520892267332335,0.3478260869565217,0.2334455667789
+58,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7684191791001471,0.9624306320607616,0.9810354897050164,0.0842410835139219,0.4393884873807471,0.4347826086956521,0.3944258639910813
+59,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.016067960432773,1.3080773231858571,1.1437120805455616,0.2475572378051151,0.5646232906210208,0.391304347826087,0.3589225589225589
+60,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8793817961006489,1.0375334170981574,1.0185938430494057,0.4009271494404288,0.7564976125500107,0.3333333333333333,0.2638888888888889
+61,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1147004267066227,1.7071050292104026,1.30656229442396,0.1726823438002208,0.4546771930122139,0.3333333333333333,0.3101010101010101
+62,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.6681907625491478,0.9152563540201616,0.9566903124941538,0.3656325448928352,0.63353913451982,0.5833333333333334,0.35650623885918
+63,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9237150954439284,1.199730427464336,1.095322065633819,-0.0061742129531694,0.2675700843200629,0.2916666666666667,0.2314814814814814
+64,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0288026915024564,1.6887465591569468,1.2995178179451587,-0.29438795357085,0.0408996650299661,0.375,0.3476190476190476
+65,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7866279855384141,1.053574568329882,1.0264378053880725,-0.2215625440244826,0.2015070501663781,0.391304347826087,0.3352326685660018
+66,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8472850611646561,1.1936390669859025,1.0925379018532502,-0.1199542584182806,0.3318338037747907,0.6086956521739131,0.5416666666666666
+67,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.2044599750246772,1.9753989879865617,1.4054888786420765,-0.4783296085183419,0.075026493704119,0.4782608695652174,0.4051282051282051
+68,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.060847812646049,1.6891261349044318,1.2996638545810342,0.1785158166024157,0.4465252130656788,0.391304347826087,0.2933333333333333
+69,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9349419084048124,1.321264875568652,1.149462863936305,0.2807998532254846,0.5917058358834485,0.3043478260869565,0.2307692307692307
+70,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8404178710671767,0.947060411542377,0.9731702890770848,0.2588839950080842,0.5736466950023289,0.5416666666666666,0.5343358395989976
+71,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0859646475949798,1.949324013693898,1.3961819414724923,-0.0997256893024709,0.2261607850332167,0.3333333333333333,0.2442528735632184
+72,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0135182520284538,1.6069664764173346,1.2676618146877086,0.006911333776031,0.4595075673481524,0.4166666666666667,0.3712820512820513
+73,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9252466335143856,1.2160638679382243,1.1027528589571756,0.0671733978145638,0.3085757609382452,0.375,0.3440016103059581
+74,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0062516370264547,1.6410914999498534,1.281050935735911,0.1187528919179432,0.4104357662943265,0.4166666666666667,0.3962703962703962
+75,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.963416212976797,1.4709101721099018,1.2128108558674358,0.0576437154765576,0.4765000304340966,0.391304347826087,0.3898692810457516
+76,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.6922841589206612,0.8267227133162475,0.9092429341579992,0.1151496996238231,0.4185078116620956,0.5652173913043478,0.5626984126984128
+77,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1240617169848934,1.6611850522663991,1.2888696800943062,-0.1911638381054794,0.0247925381019619,0.217391304347826,0.1555555555555555
+78,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.83431187311075,1.052243550110448,1.0257892327912437,0.1880141243573967,0.6203946195875231,0.4782608695652174,0.3333333333333333
+79,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9656101625977364,1.327691044783286,1.152254765571957,0.217804775395893,0.5036636490559524,0.4347826086956521,0.3395061728395062
+80,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0564804349519263,1.4604710382680717,1.2084994986627309,0.0016535553369914,0.3406837629703489,0.4166666666666667,0.3833147528799702
+81,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8274795828062901,1.2091940616152987,1.0996336033494514,-0.2365915551975361,0.1833355568668996,0.5,0.3806787082649152
+82,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9846451525696404,1.6983059123800528,1.3031906661651826,-0.208291000849764,-0.0032240882014953,0.4583333333333333,0.4074074074074074
+83,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9417661494456242,1.2465936228122214,1.1165095713034534,0.1392276022174388,0.5127839123055333,0.4166666666666667,0.4077618288144604
+84,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.021417063179496,1.5592358122938983,1.248693642289372,0.3295986536517467,0.6004756470079888,0.4583333333333333,0.4481481481481482
+85,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.2125001392792525,2.1697341194188824,1.4730017377514808,0.1082050147752621,0.3330491896749222,0.3043478260869565,0.236111111111111
+86,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9163928606431596,1.1714054603693145,1.0823148619368184,-0.0410373263380374,0.2973719249144489,0.4782608695652174,0.435024154589372
+87,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.856308522225595,1.115615084727931,1.0562268150013665,0.0784835377028849,0.4520892267332335,0.3478260869565217,0.2334455667789
+88,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7684191791001471,0.9624306320607616,0.9810354897050164,0.0842410835139219,0.4393884873807471,0.4347826086956521,0.3944258639910813
+89,validation,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.016067960432773,1.3080773231858571,1.1437120805455616,0.2475572378051151,0.5646232906210208,0.391304347826087,0.3589225589225589
+90,test,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9655802177389567,1.3502470205551624,1.1620012997218043,0.1814168555643953,0.4295393239892036,0.3757225433526011,0.345073998498921
+91,test,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9655802177389567,1.3502470205551624,1.1620012997218043,0.1814168555643953,0.4295393239892036,0.3757225433526011,0.345073998498921
+92,test,regression,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9655802177389567,1.3502470205551624,1.1620012997218043,0.1814168555643953,0.4295393239892036,0.3757225433526011,0.345073998498921
+93,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7508682203495978,0.8611751748668116,0.9279952450669192,-0.1902607688290483,0.0009376657553431,0.4166666666666667,0.3061728395061728
+94,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0867801017812102,1.6560394710377249,1.286871971502109,0.1325177849342932,0.4116508962003138,0.375,0.2940516273849607
+95,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.6273324867242093,0.7825002495677951,0.8845904417117535,-0.1179805508380695,0.1462778696691793,0.4166666666666667,0.2387820512820513
+96,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9384681688815693,1.2830167405648032,1.1327032888469968,0.2664722670160551,0.6358565899714056,0.375,0.3156966490299823
+97,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0565390251117182,1.8344853636448328,1.3544317493490887,0.1531334147238626,0.5479454614705082,0.3333333333333333,0.2761616161616161
+98,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8237704578853507,1.1551289233897553,1.0747692419257984,0.1491122993242564,0.464696342370446,0.3478260869565217,0.2142857142857142
+99,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9161940088316544,1.2472055393083998,1.116783568695564,0.2102147588827582,0.5891957296236503,0.5217391304347826,0.3701960784313725
+100,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1394862861370274,1.8011843674391712,1.342082101601527,-0.1225644104390391,0.3084794778727153,0.4782608695652174,0.4051282051282051
+101,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0818947085337018,1.8396699637093792,1.3563443381786866,0.1545544207774093,0.4039505963579309,0.391304347826087,0.2933333333333333
+102,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8867360699000595,1.2637948918577415,1.1241863243509689,-0.330648917913241,0.1499401063510736,0.391304347826087,0.2680776014109347
+103,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.87162135757992,1.0154188699752311,1.007679944216035,0.2273019826077298,0.5074978432635701,0.375,0.2957516339869281
+104,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1071696854669903,1.9563354494799063,1.3986906196439248,-0.0239167260850714,0.2078129996642446,0.375,0.2333333333333333
+105,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.036999599986381,1.5866059256799323,1.2596054642942498,0.0399698858432283,0.4539952672338548,0.375,0.239463601532567
+106,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9520867248704052,1.271808257754231,1.1277447662278155,0.0606907025690887,0.3166298927960081,0.375,0.2628205128205128
+107,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9951822218602934,1.645083315870715,1.2826080133348283,0.0723697066598556,0.3878901010063623,0.375,0.3148148148148148
+108,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9144927037121936,1.4102969461023889,1.1875592389865817,0.2134410005892251,0.6466181821160745,0.391304347826087,0.287037037037037
+109,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7000002178054726,0.953196682245566,0.97631792068238,0.1491267083866906,0.422930480340193,0.5652173913043478,0.3809523809523809
+110,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1159162443270507,1.6936244313254336,1.301393265437252,0.1982697624074975,0.501657814812948,0.217391304347826,0.1576086956521739
+111,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7354487459078453,0.8104058581210495,0.9002254484966805,-0.2418042991387905,0.2586907335904122,0.5652173913043478,0.4222222222222222
+112,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9290841762921752,1.18855271141366,1.0902076460077044,0.0801364723707322,0.2869118483250781,0.3478260869565217,0.2275862068965517
+113,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1420451332588304,1.7007565014196828,1.3041305538249162,-0.0489941524716663,0.2049980774696892,0.2916666666666667,0.2509803921568627
+114,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9203386280388042,1.3234360972916517,1.1504069268270474,0.2621378110906831,0.5450803760834108,0.4583333333333333,0.2777777777777777
+115,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9937602394309928,1.7339252865875363,1.3167859684047123,0.30845420096847,0.6321449522592958,0.5,0.4586894586894587
+116,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8616144725877306,1.196788659081455,1.0939783631687854,0.0003764378397848,0.3054667162449548,0.375,0.287037037037037
+117,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0248320470428391,1.4877562330313632,1.2197361325431677,-0.0686200018022793,0.3124731494799781,0.375,0.2619047619047619
+118,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.144311571087079,1.9790294467800789,1.4067798146050003,-0.0649769214818838,0.0637901564207486,0.3478260869565217,0.2507122507122507
+119,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8189008740924902,0.975470282218039,0.9876589908556692,0.0751458920337918,0.3890582685405311,0.5652173913043478,0.4273504273504273
+120,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7700213866089531,1.0525290997442798,1.0259284086837053,0.2150884515679529,0.562597779524067,0.4782608695652174,0.2756598240469208
+121,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7861235490195952,0.9073645404008336,0.9525568436585996,0.111796126719595,0.4496271530207233,0.3478260869565217,0.3134199134199134
+122,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0198361534437983,1.3818939279111488,1.1755398453098682,0.1641815131140664,0.4260366617692471,0.2608695652173913,0.218694885361552
+123,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7508682203495978,0.8611751748668116,0.9279952450669192,-0.1902607688290483,0.0009376657553431,0.4166666666666667,0.3061728395061728
+124,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0867801017812102,1.6560394710377249,1.286871971502109,0.1325177849342932,0.4116508962003138,0.375,0.2940516273849607
+125,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.6273324867242093,0.7825002495677951,0.8845904417117535,-0.1179805508380695,0.1462778696691793,0.4166666666666667,0.2387820512820513
+126,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9384681688815693,1.2830167405648032,1.1327032888469968,0.2664722670160551,0.6358565899714056,0.375,0.3156966490299823
+127,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0565390251117182,1.8344853636448328,1.3544317493490887,0.1531334147238626,0.5479454614705082,0.3333333333333333,0.2761616161616161
+128,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8237704578853507,1.1551289233897553,1.0747692419257984,0.1491122993242564,0.464696342370446,0.3478260869565217,0.2142857142857142
+129,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9161940088316544,1.2472055393083998,1.116783568695564,0.2102147588827582,0.5891957296236503,0.5217391304347826,0.3701960784313725
+130,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1394862861370274,1.8011843674391712,1.342082101601527,-0.1225644104390391,0.3084794778727153,0.4782608695652174,0.4051282051282051
+131,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0818947085337018,1.8396699637093792,1.3563443381786866,0.1545544207774093,0.4039505963579309,0.391304347826087,0.2933333333333333
+132,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8867360699000595,1.2637948918577415,1.1241863243509689,-0.330648917913241,0.1499401063510736,0.391304347826087,0.2680776014109347
+133,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.87162135757992,1.0154188699752311,1.007679944216035,0.2273019826077298,0.5074978432635701,0.375,0.2957516339869281
+134,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1071696854669903,1.9563354494799063,1.3986906196439248,-0.0239167260850714,0.2078129996642446,0.375,0.2333333333333333
+135,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.036999599986381,1.5866059256799323,1.2596054642942498,0.0399698858432283,0.4539952672338548,0.375,0.239463601532567
+136,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9520867248704052,1.271808257754231,1.1277447662278155,0.0606907025690887,0.3166298927960081,0.375,0.2628205128205128
+137,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9951822218602934,1.645083315870715,1.2826080133348283,0.0723697066598556,0.3878901010063623,0.375,0.3148148148148148
+138,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9144927037121936,1.4102969461023889,1.1875592389865817,0.2134410005892251,0.6466181821160745,0.391304347826087,0.287037037037037
+139,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7000002178054726,0.953196682245566,0.97631792068238,0.1491267083866906,0.422930480340193,0.5652173913043478,0.3809523809523809
+140,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1159162443270507,1.6936244313254336,1.301393265437252,0.1982697624074975,0.501657814812948,0.217391304347826,0.1576086956521739
+141,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7354487459078453,0.8104058581210495,0.9002254484966805,-0.2418042991387905,0.2586907335904122,0.5652173913043478,0.4222222222222222
+142,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9290841762921752,1.18855271141366,1.0902076460077044,0.0801364723707322,0.2869118483250781,0.3478260869565217,0.2275862068965517
+143,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1420451332588304,1.7007565014196828,1.3041305538249162,-0.0489941524716663,0.2049980774696892,0.2916666666666667,0.2509803921568627
+144,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9203386280388042,1.3234360972916517,1.1504069268270474,0.2621378110906831,0.5450803760834108,0.4583333333333333,0.2777777777777777
+145,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9937602394309928,1.7339252865875363,1.3167859684047123,0.30845420096847,0.6321449522592958,0.5,0.4586894586894587
+146,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8616144725877306,1.196788659081455,1.0939783631687854,0.0003764378397848,0.3054667162449548,0.375,0.287037037037037
+147,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0248320470428391,1.4877562330313632,1.2197361325431677,-0.0686200018022793,0.3124731494799781,0.375,0.2619047619047619
+148,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.144311571087079,1.9790294467800789,1.4067798146050003,-0.0649769214818838,0.0637901564207486,0.3478260869565217,0.2507122507122507
+149,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8189008740924902,0.975470282218039,0.9876589908556692,0.0751458920337918,0.3890582685405311,0.5652173913043478,0.4273504273504273
+150,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7700213866089531,1.0525290997442798,1.0259284086837053,0.2150884515679529,0.562597779524067,0.4782608695652174,0.2756598240469208
+151,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7861235490195952,0.9073645404008336,0.9525568436585996,0.111796126719595,0.4496271530207233,0.3478260869565217,0.3134199134199134
+152,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0198361534437983,1.3818939279111488,1.1755398453098682,0.1641815131140664,0.4260366617692471,0.2608695652173913,0.218694885361552
+153,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7508682203495978,0.8611751748668116,0.9279952450669192,-0.1902607688290483,0.0009376657553431,0.4166666666666667,0.3061728395061728
+154,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0867801017812102,1.6560394710377249,1.286871971502109,0.1325177849342932,0.4116508962003138,0.375,0.2940516273849607
+155,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.6273324867242093,0.7825002495677951,0.8845904417117535,-0.1179805508380695,0.1462778696691793,0.4166666666666667,0.2387820512820513
+156,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9384681688815693,1.2830167405648032,1.1327032888469968,0.2664722670160551,0.6358565899714056,0.375,0.3156966490299823
+157,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0565390251117182,1.8344853636448328,1.3544317493490887,0.1531334147238626,0.5479454614705082,0.3333333333333333,0.2761616161616161
+158,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8237704578853507,1.1551289233897553,1.0747692419257984,0.1491122993242564,0.464696342370446,0.3478260869565217,0.2142857142857142
+159,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9161940088316544,1.2472055393083998,1.116783568695564,0.2102147588827582,0.5891957296236503,0.5217391304347826,0.3701960784313725
+160,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1394862861370274,1.8011843674391712,1.342082101601527,-0.1225644104390391,0.3084794778727153,0.4782608695652174,0.4051282051282051
+161,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0818947085337018,1.8396699637093792,1.3563443381786866,0.1545544207774093,0.4039505963579309,0.391304347826087,0.2933333333333333
+162,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8867360699000595,1.2637948918577415,1.1241863243509689,-0.330648917913241,0.1499401063510736,0.391304347826087,0.2680776014109347
+163,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.87162135757992,1.0154188699752311,1.007679944216035,0.2273019826077298,0.5074978432635701,0.375,0.2957516339869281
+164,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1071696854669903,1.9563354494799063,1.3986906196439248,-0.0239167260850714,0.2078129996642446,0.375,0.2333333333333333
+165,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.036999599986381,1.5866059256799323,1.2596054642942498,0.0399698858432283,0.4539952672338548,0.375,0.239463601532567
+166,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9520867248704052,1.271808257754231,1.1277447662278155,0.0606907025690887,0.3166298927960081,0.375,0.2628205128205128
+167,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9951822218602934,1.645083315870715,1.2826080133348283,0.0723697066598556,0.3878901010063623,0.375,0.3148148148148148
+168,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9144927037121936,1.4102969461023889,1.1875592389865817,0.2134410005892251,0.6466181821160745,0.391304347826087,0.287037037037037
+169,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7000002178054726,0.953196682245566,0.97631792068238,0.1491267083866906,0.422930480340193,0.5652173913043478,0.3809523809523809
+170,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1159162443270507,1.6936244313254336,1.301393265437252,0.1982697624074975,0.501657814812948,0.217391304347826,0.1576086956521739
+171,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7354487459078453,0.8104058581210495,0.9002254484966805,-0.2418042991387905,0.2586907335904122,0.5652173913043478,0.4222222222222222
+172,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9290841762921752,1.18855271141366,1.0902076460077044,0.0801364723707322,0.2869118483250781,0.3478260869565217,0.2275862068965517
+173,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1420451332588304,1.7007565014196828,1.3041305538249162,-0.0489941524716663,0.2049980774696892,0.2916666666666667,0.2509803921568627
+174,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9203386280388042,1.3234360972916517,1.1504069268270474,0.2621378110906831,0.5450803760834108,0.4583333333333333,0.2777777777777777
+175,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9937602394309928,1.7339252865875363,1.3167859684047123,0.30845420096847,0.6321449522592958,0.5,0.4586894586894587
+176,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8616144725877306,1.196788659081455,1.0939783631687854,0.0003764378397848,0.3054667162449548,0.375,0.287037037037037
+177,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0248320470428391,1.4877562330313632,1.2197361325431677,-0.0686200018022793,0.3124731494799781,0.375,0.2619047619047619
+178,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.144311571087079,1.9790294467800789,1.4067798146050003,-0.0649769214818838,0.0637901564207486,0.3478260869565217,0.2507122507122507
+179,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8189008740924902,0.975470282218039,0.9876589908556692,0.0751458920337918,0.3890582685405311,0.5652173913043478,0.4273504273504273
+180,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7700213866089531,1.0525290997442798,1.0259284086837053,0.2150884515679529,0.562597779524067,0.4782608695652174,0.2756598240469208
+181,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7861235490195952,0.9073645404008336,0.9525568436585996,0.111796126719595,0.4496271530207233,0.3478260869565217,0.3134199134199134
+182,validation,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0198361534437983,1.3818939279111488,1.1755398453098682,0.1641815131140664,0.4260366617692471,0.2608695652173913,0.218694885361552
+183,test,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9602937893056194,1.333974595401113,1.1549781796212053,0.1210000630215022,0.3601258133409578,0.3583815028901734,0.2778397490098938
+184,test,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9602937893056194,1.333974595401113,1.1549781796212053,0.1210000630215022,0.3601258133409578,0.3583815028901734,0.2778397490098938
+185,test,regression_delta,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9602937893056194,1.333974595401113,1.1549781796212053,0.1210000630215022,0.3601258133409578,0.3583815028901734,0.2778397490098938
+186,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7508682203495978,0.8611751748668116,0.9279952450669192,-0.1902607688290483,0.0009376657553431,0.75,0.4285714285714285
+187,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0867801017812102,1.6560394710377249,1.286871971502109,0.1325177849342932,0.4116508962003138,0.5833333333333334,0.3684210526315789
+188,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.6273324867242093,0.7825002495677951,0.8845904417117535,-0.1179805508380695,0.1462778696691793,0.875,0.4666666666666667
+189,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9384681688815693,1.2830167405648032,1.1327032888469968,0.2664722670160551,0.6358565899714056,0.7916666666666666,0.5818815331010454
+190,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0565390251117182,1.8344853636448328,1.3544317493490887,0.1531334147238626,0.5479454614705082,0.625,0.4692874692874693
+191,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8237704578853507,1.1551289233897553,1.0747692419257984,0.1491122993242564,0.464696342370446,0.8260869565217391,0.4523809523809524
+192,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9161940088316544,1.2472055393083998,1.116783568695564,0.2102147588827582,0.5891957296236503,0.8260869565217391,0.4523809523809523
+193,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1394862861370274,1.8011843674391712,1.342082101601527,-0.1225644104390391,0.3084794778727153,0.6521739130434783,0.4888888888888889
+194,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0818947085337018,1.8396699637093792,1.3563443381786866,0.1545544207774093,0.4039505963579309,0.7391304347826086,0.425
+195,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8867360699000595,1.2637948918577415,1.1241863243509689,-0.330648917913241,0.1499401063510736,0.782608695652174,0.4390243902439024
+196,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.87162135757992,1.0154188699752311,1.007679944216035,0.2273019826077298,0.5074978432635701,0.7083333333333334,0.4146341463414634
+197,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1071696854669903,1.9563354494799063,1.3986906196439248,-0.0239167260850714,0.2078129996642446,0.75,0.4285714285714285
+198,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.036999599986381,1.5866059256799323,1.2596054642942498,0.0399698858432283,0.4539952672338548,0.5833333333333334,0.4444444444444444
+199,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9520867248704052,1.271808257754231,1.1277447662278155,0.0606907025690887,0.3166298927960081,0.75,0.4285714285714285
+200,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9951822218602934,1.645083315870715,1.2826080133348283,0.0723697066598556,0.3878901010063623,0.625,0.3846153846153846
+201,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9144927037121936,1.4102969461023889,1.1875592389865817,0.2134410005892251,0.6466181821160745,0.8260869565217391,0.4523809523809524
+202,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7000002178054726,0.953196682245566,0.97631792068238,0.1491267083866906,0.422930480340193,0.9130434782608696,0.4772727272727272
+203,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1159162443270507,1.6936244313254336,1.301393265437252,0.1982697624074975,0.501657814812948,0.6956521739130435,0.4102564102564102
+204,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7354487459078453,0.8104058581210495,0.9002254484966805,-0.2418042991387905,0.2586907335904122,0.7391304347826086,0.425
+205,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9290841762921752,1.18855271141366,1.0902076460077044,0.0801364723707322,0.2869118483250781,0.6956521739130435,0.4102564102564102
+206,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.1420451332588304,1.7007565014196828,1.3041305538249162,-0.0489941524716663,0.2049980774696892,0.5416666666666666,0.3513513513513513
+207,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9203386280388042,1.3234360972916517,1.1504069268270474,0.2621378110906831,0.5450803760834108,0.75,0.4285714285714286
+208,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9937602394309928,1.7339252865875363,1.3167859684047123,0.30845420096847,0.6321449522592958,0.7083333333333334,0.5213675213675214
+209,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8616144725877306,1.196788659081455,1.0939783631687854,0.0003764378397848,0.3054667162449548,0.75,0.4285714285714286
+210,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0248320470428391,1.4877562330313632,1.2197361325431677,-0.0686200018022793,0.3124731494799781,0.75,0.4285714285714286
+211,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.144311571087079,1.9790294467800789,1.4067798146050003,-0.0649769214818838,0.0637901564207486,0.7391304347826086,0.425
+212,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.8189008740924902,0.975470282218039,0.9876589908556692,0.0751458920337918,0.3890582685405311,0.7391304347826086,0.425
+213,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7700213866089531,1.0525290997442798,1.0259284086837053,0.2150884515679529,0.562597779524067,0.8260869565217391,0.4523809523809523
+214,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.7861235490195952,0.9073645404008336,0.9525568436585996,0.111796126719595,0.4496271530207233,0.6521739130434783,0.4888888888888889
+215,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,1.0198361534437983,1.3818939279111488,1.1755398453098682,0.1641815131140664,0.4260366617692471,0.782608695652174,0.5787545787545787
+216,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7508682203495978,0.8611751748668116,0.9279952450669192,-0.1902607688290483,0.0009376657553431,0.75,0.4285714285714285
+217,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0867801017812102,1.6560394710377249,1.286871971502109,0.1325177849342932,0.4116508962003138,0.5833333333333334,0.3684210526315789
+218,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.6273324867242093,0.7825002495677951,0.8845904417117535,-0.1179805508380695,0.1462778696691793,0.875,0.4666666666666667
+219,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9384681688815693,1.2830167405648032,1.1327032888469968,0.2664722670160551,0.6358565899714056,0.7916666666666666,0.5818815331010454
+220,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0565390251117182,1.8344853636448328,1.3544317493490887,0.1531334147238626,0.5479454614705082,0.625,0.4692874692874693
+221,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8237704578853507,1.1551289233897553,1.0747692419257984,0.1491122993242564,0.464696342370446,0.8260869565217391,0.4523809523809524
+222,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9161940088316544,1.2472055393083998,1.116783568695564,0.2102147588827582,0.5891957296236503,0.8260869565217391,0.4523809523809523
+223,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1394862861370274,1.8011843674391712,1.342082101601527,-0.1225644104390391,0.3084794778727153,0.6521739130434783,0.4888888888888889
+224,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0818947085337018,1.8396699637093792,1.3563443381786866,0.1545544207774093,0.4039505963579309,0.7391304347826086,0.425
+225,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8867360699000595,1.2637948918577415,1.1241863243509689,-0.330648917913241,0.1499401063510736,0.782608695652174,0.4390243902439024
+226,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.87162135757992,1.0154188699752311,1.007679944216035,0.2273019826077298,0.5074978432635701,0.7083333333333334,0.4146341463414634
+227,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1071696854669903,1.9563354494799063,1.3986906196439248,-0.0239167260850714,0.2078129996642446,0.75,0.4285714285714285
+228,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.036999599986381,1.5866059256799323,1.2596054642942498,0.0399698858432283,0.4539952672338548,0.5833333333333334,0.4444444444444444
+229,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9520867248704052,1.271808257754231,1.1277447662278155,0.0606907025690887,0.3166298927960081,0.75,0.4285714285714285
+230,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9951822218602934,1.645083315870715,1.2826080133348283,0.0723697066598556,0.3878901010063623,0.625,0.3846153846153846
+231,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9144927037121936,1.4102969461023889,1.1875592389865817,0.2134410005892251,0.6466181821160745,0.8260869565217391,0.4523809523809524
+232,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7000002178054726,0.953196682245566,0.97631792068238,0.1491267083866906,0.422930480340193,0.9130434782608696,0.4772727272727272
+233,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1159162443270507,1.6936244313254336,1.301393265437252,0.1982697624074975,0.501657814812948,0.6956521739130435,0.4102564102564102
+234,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7354487459078453,0.8104058581210495,0.9002254484966805,-0.2418042991387905,0.2586907335904122,0.7391304347826086,0.425
+235,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9290841762921752,1.18855271141366,1.0902076460077044,0.0801364723707322,0.2869118483250781,0.6956521739130435,0.4102564102564102
+236,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.1420451332588304,1.7007565014196828,1.3041305538249162,-0.0489941524716663,0.2049980774696892,0.5416666666666666,0.3513513513513513
+237,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9203386280388042,1.3234360972916517,1.1504069268270474,0.2621378110906831,0.5450803760834108,0.75,0.4285714285714286
+238,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9937602394309928,1.7339252865875363,1.3167859684047123,0.30845420096847,0.6321449522592958,0.7083333333333334,0.5213675213675214
+239,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8616144725877306,1.196788659081455,1.0939783631687854,0.0003764378397848,0.3054667162449548,0.75,0.4285714285714286
+240,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0248320470428391,1.4877562330313632,1.2197361325431677,-0.0686200018022793,0.3124731494799781,0.75,0.4285714285714286
+241,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.144311571087079,1.9790294467800789,1.4067798146050003,-0.0649769214818838,0.0637901564207486,0.7391304347826086,0.425
+242,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.8189008740924902,0.975470282218039,0.9876589908556692,0.0751458920337918,0.3890582685405311,0.7391304347826086,0.425
+243,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7700213866089531,1.0525290997442798,1.0259284086837053,0.2150884515679529,0.562597779524067,0.8260869565217391,0.4523809523809523
+244,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.7861235490195952,0.9073645404008336,0.9525568436585996,0.111796126719595,0.4496271530207233,0.6521739130434783,0.4888888888888889
+245,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,1.0198361534437983,1.3818939279111488,1.1755398453098682,0.1641815131140664,0.4260366617692471,0.782608695652174,0.5787545787545787
+246,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7508682203495978,0.8611751748668116,0.9279952450669192,-0.1902607688290483,0.0009376657553431,0.75,0.4285714285714285
+247,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0867801017812102,1.6560394710377249,1.286871971502109,0.1325177849342932,0.4116508962003138,0.5833333333333334,0.3684210526315789
+248,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.6273324867242093,0.7825002495677951,0.8845904417117535,-0.1179805508380695,0.1462778696691793,0.875,0.4666666666666667
+249,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9384681688815693,1.2830167405648032,1.1327032888469968,0.2664722670160551,0.6358565899714056,0.7916666666666666,0.5818815331010454
+250,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0565390251117182,1.8344853636448328,1.3544317493490887,0.1531334147238626,0.5479454614705082,0.625,0.4692874692874693
+251,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8237704578853507,1.1551289233897553,1.0747692419257984,0.1491122993242564,0.464696342370446,0.8260869565217391,0.4523809523809524
+252,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9161940088316544,1.2472055393083998,1.116783568695564,0.2102147588827582,0.5891957296236503,0.8260869565217391,0.4523809523809523
+253,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1394862861370274,1.8011843674391712,1.342082101601527,-0.1225644104390391,0.3084794778727153,0.6521739130434783,0.4888888888888889
+254,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0818947085337018,1.8396699637093792,1.3563443381786866,0.1545544207774093,0.4039505963579309,0.7391304347826086,0.425
+255,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8867360699000595,1.2637948918577415,1.1241863243509689,-0.330648917913241,0.1499401063510736,0.782608695652174,0.4390243902439024
+256,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.87162135757992,1.0154188699752311,1.007679944216035,0.2273019826077298,0.5074978432635701,0.7083333333333334,0.4146341463414634
+257,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1071696854669903,1.9563354494799063,1.3986906196439248,-0.0239167260850714,0.2078129996642446,0.75,0.4285714285714285
+258,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.036999599986381,1.5866059256799323,1.2596054642942498,0.0399698858432283,0.4539952672338548,0.5833333333333334,0.4444444444444444
+259,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9520867248704052,1.271808257754231,1.1277447662278155,0.0606907025690887,0.3166298927960081,0.75,0.4285714285714285
+260,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9951822218602934,1.645083315870715,1.2826080133348283,0.0723697066598556,0.3878901010063623,0.625,0.3846153846153846
+261,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9144927037121936,1.4102969461023889,1.1875592389865817,0.2134410005892251,0.6466181821160745,0.8260869565217391,0.4523809523809524
+262,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7000002178054726,0.953196682245566,0.97631792068238,0.1491267083866906,0.422930480340193,0.9130434782608696,0.4772727272727272
+263,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1159162443270507,1.6936244313254336,1.301393265437252,0.1982697624074975,0.501657814812948,0.6956521739130435,0.4102564102564102
+264,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7354487459078453,0.8104058581210495,0.9002254484966805,-0.2418042991387905,0.2586907335904122,0.7391304347826086,0.425
+265,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9290841762921752,1.18855271141366,1.0902076460077044,0.0801364723707322,0.2869118483250781,0.6956521739130435,0.4102564102564102
+266,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.1420451332588304,1.7007565014196828,1.3041305538249162,-0.0489941524716663,0.2049980774696892,0.5416666666666666,0.3513513513513513
+267,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9203386280388042,1.3234360972916517,1.1504069268270474,0.2621378110906831,0.5450803760834108,0.75,0.4285714285714286
+268,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9937602394309928,1.7339252865875363,1.3167859684047123,0.30845420096847,0.6321449522592958,0.7083333333333334,0.5213675213675214
+269,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8616144725877306,1.196788659081455,1.0939783631687854,0.0003764378397848,0.3054667162449548,0.75,0.4285714285714286
+270,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0248320470428391,1.4877562330313632,1.2197361325431677,-0.0686200018022793,0.3124731494799781,0.75,0.4285714285714286
+271,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.144311571087079,1.9790294467800789,1.4067798146050003,-0.0649769214818838,0.0637901564207486,0.7391304347826086,0.425
+272,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.8189008740924902,0.975470282218039,0.9876589908556692,0.0751458920337918,0.3890582685405311,0.7391304347826086,0.425
+273,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7700213866089531,1.0525290997442798,1.0259284086837053,0.2150884515679529,0.562597779524067,0.8260869565217391,0.4523809523809523
+274,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.7861235490195952,0.9073645404008336,0.9525568436585996,0.111796126719595,0.4496271530207233,0.6521739130434783,0.4888888888888889
+275,validation,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,1.0198361534437983,1.3818939279111488,1.1755398453098682,0.1641815131140664,0.4260366617692471,0.782608695652174,0.5787545787545787
+276,test,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Linear,0.9602937893056194,1.333974595401113,1.1549781796212053,0.1210000630215022,0.3601258133409578,0.7167630057803468,0.4541181016163307
+277,test,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,Deep Learning,0.9602937893056194,1.333974595401113,1.1549781796212053,0.1210000630215022,0.3601258133409578,0.7167630057803468,0.4541181016163307
+278,test,regression_delta_binary,0,SC,IterativeImputer,['bionaive TNF'],all,0.6,False,2022,SVM,0.9602937893056194,1.333974595401113,1.1549781796212053,0.1210000630215022,0.3601258133409578,0.7167630057803468,0.4541181016163307
