@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
+import sklearn
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+import optuna
 
 def fine_tune(train, model, search_methods):
     X_train = train.iloc[:,:-1]
@@ -11,17 +13,22 @@ def fine_tune(train, model, search_methods):
     if model == "drf_classification": # distributed random forests
         model = RandomForestClassifier()
         param_search_grid = rf_parameters()
+        scoring = "f1_weighted"
+    elif model == "drf_regression":
+        model = RandomForestRegressor()
+        param_search_grid = rf_parameters()
+        scoring = "neg_mean_squared_error"
     elif model == "GBM":
         pass # to be added
     
     print("param_search_grid:", param_search_grid)
     
     if search_methods == "GridSearch":
-        search_model = GridSearchCV(estimator=model, param_grid=param_search_grid,
+        search_model = GridSearchCV(estimator=model, param_grid=param_search_grid, scoring=scoring,
                                     cv=10, n_jobs=-1, verbose = 0)
     elif search_methods == "RandomSearch":
-        search_model = RandomizedSearchCV(estimator=model, param_distributions=param_search_grid, n_iter=20,
-                                          cv=10, n_jobs=-1, verbose = 0)
+        search_model = RandomizedSearchCV(estimator=model, param_distributions=param_search_grid, scoring=scoring,
+                                          n_iter=30, cv=10, n_jobs=-1, verbose = 0)
     search_model.fit(X_train, y_train)
     print("best_params:",search_model.best_params_)
     tuned_model = search_model.best_estimator_
@@ -55,3 +62,22 @@ def rf_parameters():
         'min_samples_leaf': min_samples_leaf,
         'bootstrap': bootstrap}
     return param_search_grid
+
+# def objective(trial):
+#     # n_estimators = trial.suggest_int('n_estimators', 2, 20)
+#     # max_depth = int(trial.suggest_float('max_depth', 1, 32, log=True))
+    
+#     classifier = trial.suggest_categorical('classifier', ['RandomForest', 'SVC'])
+    
+#     if classifier == 'RandomForest':
+#         n_estimators = trial.suggest_int('n_estimators', 5, 1000)
+#         max_depth = int(trial.suggest_float('max_depth', 1, 32, log=True))
+
+#         clf = sklearn.ensemble.RandomForestClassifier(
+#             n_estimators=n_estimators, max_depth=max_depth)
+#     else:
+#         c = trial.suggest_float('svc_c', 1e-10, 1e10, log=True)
+#         clf = sklearn.svm.SVC(C=c, gamma='auto')
+    
+#     return sklearn.model_selection.cross_val_score(
+#         clf, iris.data, iris.target, n_jobs=-1, cv=3).mean()

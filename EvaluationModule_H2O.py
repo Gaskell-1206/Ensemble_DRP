@@ -2,7 +2,6 @@ import csv
 import os
 import pathlib
 import random
-import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,7 +18,6 @@ from sklearn.model_selection import (KFold, RepeatedKFold,
 
 import h2o
 from h2o.automl import H2OAutoML
-
 
 def R2(true, pred):
     return metrics.r2_score(true, pred)
@@ -150,6 +148,7 @@ class AutoBuild():
             return 2
 
     def validate(self, model_id, estimator, trainset, testset):
+        trainset = trainset.as_data_frame()
         X = trainset.iloc[:, :-1]
         y = trainset.iloc[:, -1]
         balance_class = self.balance_class
@@ -198,10 +197,8 @@ class AutoBuild():
                     y_val = X.iloc[test_index, -1]
                     print("before sampling:", y_train.value_counts())
                     # print("class y_val:",y.iloc[test_index].value_counts())
-                    # resample = SMOTEENN(enn=EditedNearestNeighbours(
-                    #     sampling_strategy='auto', n_neighbors=3))
-                    resample = SMOTETomek(
-                        tomek=TomekLinks(sampling_strategy='auto'))
+                    resample = SMOTEENN(enn=EditedNearestNeighbours(
+                        sampling_strategy='auto', n_neighbors=3))
                     X_train, y_train = resample.fit_resample(X_train, y_train)
                     print("after sampling:", y_train.value_counts())
                     X_train = X_train.iloc[:, :-1]
@@ -213,7 +210,6 @@ class AutoBuild():
                     y_train = y.iloc[train_index]
                     X_val = X.iloc[test_index, :-1]
                     y_val = y.iloc[test_index]
-                    # print("before sampling:", y_train.value_counts())
                     data_for_balance = X.iloc[train_index, :].reset_index(
                         drop=True)
                     try:
@@ -223,22 +219,9 @@ class AutoBuild():
                         # print(e)
                         train = data_for_balance
                         pass
-
+                        
                     X_train = train.iloc[:, :-1]
                     y_train = train.iloc[:, -1]
-
-                    # create pseudo-class for statistics
-                    X_for_stat = copy.deepcopy(X_train)
-                    if "binary" in self.challenge:
-                        X_for_stat.loc[:, self.target] = y_train
-                        y_pseudo_label = X_for_stat.apply(lambda row: self.responseClassify_binary(
-                            row, 'DAS28_CRP_0M', self.target), axis=1)
-                    elif self.challenge == 'regression':
-                        X_for_stat.loc[:, self.target] = y_train
-                        y_pseudo_label = X_for_stat.apply(lambda row: self.responseClassify(
-                            row, 'DAS28_CRP_0M', self.target), axis=1)
-                    print("after sampling:", y_pseudo_label.value_counts())
-
                     X_val = X.iloc[test_index, :-1]
                     y_val = X.iloc[test_index, -1]
 
@@ -248,7 +231,16 @@ class AutoBuild():
                     y_train, y_val = y.iloc[train_index], y.iloc[test_index]
 
                 # summarize train and test composition
-                estimator.fit(X_train, y_train)
+                # estimator.fit(X_train, y_train)
+                
+                # fit models
+                train = X_train
+                train.loc[:, self.target] = y_train
+                X_train_h2o = list(train.columns[:-1])
+                y_train_h2o = self.target
+                
+                train = h2o.H2OFrame(train)
+                estimator.train(x=X_train_h2o, y=y_train_h2o, training_frame=train)
 
                 working_set = X_train
                 working_set[self.target] = y_train.values
@@ -273,7 +265,17 @@ class AutoBuild():
                     tomek=TomekLinks(sampling_strategy='auto'))
                 X_train, y_train = resample.fit_resample(X_train, y_train)
                 # print("after balancing class:", y_train.value_counts())
-                estimator.fit(X_train, y_train)
+                
+                # fit models
+                train = X_train
+                train.loc[:, self.target] = y_train
+                X_train_h2o = list(train.columns[:-1])
+                y_train_h2o = self.target
+                
+                train = h2o.H2OFrame(train)
+                train[y_train_h2o] = train[y_train_h2o].asfactor()
+                estimator.train(x=X_train_h2o, y=y_train_h2o, training_frame=train)
+                # estimator.fit(X_train_h2o, y_train_h2o)
 
                 working_set = X_train
                 working_set[self.target] = y_train.values
@@ -285,17 +287,26 @@ class AutoBuild():
                               working_set, self.val_perf)
 
         # use all data in trainset to train model and testset to evaluate performance
-        X = trainset.iloc[:, :-1]
-        y = trainset.iloc[:, -1]
-        estimator.fit(X, y)
-        self.evaluate(model_id, estimator, "test", testset, self.test_perf)
-
+        # X = trainset.iloc[:, :-1]
+        # y = trainset.iloc[:, -1]
+        
+            X_train_h2o = list(trainset.columns[:-1])
+            y_train_h2o = self.target
+            train = h2o.H2OFrame(trainset)
+            train[y_train_h2o] = train[y_train_h2o].asfactor()
+            
+            estimator.train(x=X_train_h2o, y=y_train_h2o, training_frame=train)
+        # estimator.fit(X, y)
+        self.evaluate(model_id, estimator, "test", testset.as_data_frame(), self.test_perf)
+        
     # def validate_h2o(self, model_id, estimators, trainset, testset):
+        
 
     def evaluate(self, model_id, model, dataset, working_set, save_df):
         X = working_set.drop(columns=self.target)
         true = working_set[self.target]
-        pred = model.predict(X)
+        X = h2o.H2OFrame(X)
+        pred = model.predict(X).as_data_frame()['predict']
         baseline = working_set['DAS28_CRP_0M']
 
         baseline, true, pred = np.array(

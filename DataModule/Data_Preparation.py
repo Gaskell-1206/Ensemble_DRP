@@ -53,13 +53,12 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                  dataset: Optional[Callable] = 'CORRONA CERTAIN',
                  process_approach: Optional[Callable] = 'KVB',
                  imputation: Optional[Callable] = 'KNN',
-                 patient_group: Optional[Callable] = 'all',
+                 patient_group: Optional[Callable] = ['bionaive TNF'],
                  drug_group: Optional[Callable] = 'all',
                  time_points: Optional[Callable] = (0, 3),
                  train_test_rate: float = 0.8,
                  remove_low_DAS = False,
                  save_csv: bool = False,
-                 balance_class: bool = False,
                  random_state: Optional[Callable] = 2022,
                  verbose: int = 0,
                  ):
@@ -84,9 +83,10 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                 'challenge should be either "regression", "regression_delta", "regression_delta_binary", "classification", or "binary_classification"')
         if process_approach not in ("KVB", "SC"):
             raise ValueError('process_approach should be either "KVB" or "SC"')
-        if patient_group not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
-            raise ValueError(
-                'patient_group should be either "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"')
+        for patient_group_ in patient_group:
+            if patient_group_ not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
+                raise ValueError(
+                    'patient_group should be either "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"')
         if drug_group not in ("all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"):
             raise ValueError(
                 'drug_group should be "all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"')
@@ -104,6 +104,17 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
             df_all = pd.read_csv(self.library_root / library_name)
             df_3M = pd.read_csv(self.library_root /
                                 'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
+        
+        if challenge == "regression":
+            self.target = "DAS28_CRP_3M"
+        elif challenge == "regression_delta" or challenge == "regression_delta_binary":
+            self.target = "delta"
+        elif challenge == "classification":
+            self.target = "DrugResponse"
+        elif challenge == "binary_classification":
+            self.target = "DrugResponse_binary"
+        else:
+            self.target = ""
 
         self.categorical = ["grp", "init_group", "gender", "final_education",
                             "race_grp", "ethnicity", "newsmoker", "drinker", "ara_func_class"]
@@ -168,36 +179,17 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
                 
             else:
                 imputed_train, imputed_test = self.Apply_imputation(df)
-                
-            # print(imputed_train['futime'].value_counts())
 
             # create dataframe by two consecutive months
             df_train = self.create_dataframe(imputed_train, 'Train')
             df_test = self.create_dataframe(imputed_test, 'Test')
-            
-            # if balance_class:
-            #     X = df_train.iloc[:,:-1]
-            #     y = df_train.iloc[:,-1]
-            #     target_name = df_train.columns[-1]
-            #     if self.verbose > 0:
-            #         print("before balance class:", df_train[target_name].value_counts())
-            #     # define pipeline
-            #     oversample = SMOTE(sampling_strategy=0.8)
-            #     undersample = RandomUnderSampler(sampling_strategy=0.9)
-            #     # transform the dataset
-            #     X, y = oversample.fit_resample(X, y)
-            #     X, y = undersample.fit_resample(X, y)
-            #     df_train = X
-            #     df_train[target_name] = y
-            #     if self.verbose > 0:
-            #         print("after balance class:", df_train[target_name].value_counts())
                 
             self.save_to_csv(df_train, "Train")
             self.save_to_csv(df_test, "Test")
             
             if self.save_csv:
                 file_loc = os.path.join(
-                    self.library_root, 'tableau_data', f'Coronna_Data_CERTAIN_{self.challenge}_{self.process_approach}_{self.time_points[0]}M_{self.time_points[1]}M_{self.patient_group}_{self.drug_group}_{str(balance_class)}', f'{dataset}.csv')
+                    self.library_root, 'tableau_data', f'Coronna_Data_CERTAIN_{self.challenge}_{self.process_approach}_{self.time_points[0]}M_{self.time_points[1]}M_{self.patient_group}_{self.drug_group}', f'{dataset}.csv')
                 file_loc = file_loc.replace(' ', '_') # avoid spacing
                 self.check_dir(file_loc)
                 if self.verbose > 0:
@@ -244,7 +236,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
     def split_data(self, df):
         # data filter
         if (self.patient_group != 'all') & (self.patient_group != 'KVB'):
-            df = df[df['init_group'] == self.patient_group]
+            df = df[df['init_group'].isin(self.patient_group)]
         if len(self.sample_list) > 0:
             if self.verbose > 0:
                 print(self.sample_list)
@@ -325,7 +317,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         # impute test set
         if self.verbose > 0:
             print("Missing values in test before imputation:", len(test[test.isna().any(axis=1)]))
-        imputed_test = imputer.fit_transform(test)
+        imputed_test = imputer.transform(test)
         imput_test_df = pd.DataFrame(imputed_test, columns=test.columns)
         imput_test_df['UNMC_id'] = test_UNMC_id.values
         if self.verbose > 0:
@@ -370,6 +362,7 @@ class CoronnaCERTAINDataset(torch.utils.data.Dataset):
         
         # create DrugResponse for 3-class classification tasks
         elif self.challenge == "classification":
+            # df_merged.loc[:, 'delta'] = df_merged['DAS28_CRP_0M'] - df_merged['DAS28_CRP_3M']
             df_merged.loc[:, 'DrugResponse'] = df_merged.apply(lambda row: responseClassify(row), axis=1)
             df_merged = df_merged.drop(columns="DAS28_CRP_3M")
             # label encoder
