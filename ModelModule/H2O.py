@@ -1,39 +1,34 @@
-import csv
+import h2o
 import os
+from h2o.automl import H2OAutoML
+from h2o.estimators.infogram import H2OInfogram
+from h2o.estimators.gbm import H2OGradientBoostingEstimator
+import pandas as pd
+import numpy as np
 import sys
+import csv
 from pathlib import Path
-
+sys.path.insert(0, '/gpfs/home/sc9295/Projects/ML_RA_EHR')
+from DataModule.Data_Preparation import CoronnaCERTAINDataset
 import EvaluationModule
 import EvaluationModule_H2O
-import h2o
-import numpy as np
-import pandas as pd
-from DataModule.Data_Preparation import CoronnaCERTAINDataset
-from h2o.automl import H2OAutoML
-from h2o.estimators.gbm import H2OGradientBoostingEstimator
-from h2o.estimators.infogram import H2OInfogram
-
-sys.path.insert(0, '/gpfs/home/sc9295/Projects/ML_RA_EHR')
 pd.options.mode.chained_assignment = None
 
 if __name__ == "__main__":
     # define data module
     dataset = CoronnaCERTAINDataset(
-        library_root='/gpfs/home/sc9295/Projects/ML_RA_EHR/Dataset/',
-        # option: regression, regression_delta, classification, binary_classification, regression_delta_binary
-        challenge='classification',
-        dataset='CORRONA CERTAIN',
-        process_approach='SC',  # option: KVB, SC
-        # option: SimpleFill, KNN, SoftImpute, BiScaler, NuclearNormMinimization, IterativeImputer, IterativeSVD, None(raw)
-        imputation=None,
-        # option: "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"
-        patient_group=['bionaive TNF'],
-        drug_group='all',  # option: "all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"
-        time_points=(0, 3),
-        train_test_rate=0.8,
-        remove_low_DAS=True,
-        save_csv=False,
-        random_state=2022,
+        library_root = '/gpfs/home/sc9295/Projects/ML_RA_EHR/Dataset/',
+        challenge = 'classification', #option: regression, regression_delta, classification, binary_classification, regression_delta_binary
+        dataset = 'CORRONA CERTAIN', 
+        process_approach = 'SC', #option: KVB, SC
+        imputation = None, #option: SimpleFill, KNN, SoftImpute, BiScaler, NuclearNormMinimization, IterativeImputer, IterativeSVD, None(raw)
+        patient_group = ['bionaive TNF'], #option: "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"
+        drug_group = 'all', #option: "all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"
+        time_points = (0,3), 
+        train_test_rate = 0.8,
+        remove_low_DAS = True,
+        save_csv = False, 
+        random_state = 2022,
         verbose=False)
 
     train, train_loc = dataset.get_train()
@@ -61,22 +56,19 @@ if __name__ == "__main__":
     # Run AutoML for 20 base models
     project_name = "SC_3_Class_classification_Aug4_final"
     nfolds = 10
-    sample_factors = [1.0, 0.5]
+    sample_factors = [1.0,0.5]
     if "regression" in dataset.challenge:
-        aml = H2OAutoML(nfolds=nfolds, seed=2022, project_name=project_name)
+        aml = H2OAutoML(nfolds=nfolds, seed = 2022, project_name = project_name)
     elif dataset.challenge == "binary_classification":
-        aml = H2OAutoML(nfolds=nfolds, balance_classes=True, class_sampling_factors=sample_factors,
-                        sort_metric='mean_per_class_error', seed=2022, project_name=project_name)
+        aml = H2OAutoML(nfolds=nfolds, balance_classes=True, class_sampling_factors=sample_factors, sort_metric='mean_per_class_error', seed = 2022, project_name = project_name)
     elif dataset.challenge == "classification":
-        aml = H2OAutoML(nfolds=nfolds, balance_classes=True,
-                        sort_metric='mean_per_class_error', seed=2022, project_name=project_name)
+        aml = H2OAutoML(nfolds=nfolds, balance_classes=True, sort_metric='mean_per_class_error', seed = 2022, project_name = project_name)
     # max_runtime_secs
     aml.train(x=x, y=y, training_frame=train_h2o)
-
+    
     # View the AutoML Leaderboard
     lb = aml.leaderboard
-    # Print all rows instead of default (10 rows)
-    print(lb.head(rows=lb.nrows))
+    print(lb.head(rows=lb.nrows))  # Print all rows instead of default (10 rows)
     print(aml.leader)
 
     model_id_list = lb.as_data_frame()['model_id'].values.tolist()
@@ -90,8 +82,8 @@ if __name__ == "__main__":
     #     if len(model_id_list) > 10:
     #         break
 
-    header = ['dataset', 'challenge', 'model_id']
-
+    header = ['dataset','challenge', 'model_id']
+        
     # get evaluation metrics list
     model = h2o.get_model(model_id_list[0])
     cv_df = model.cross_validation_metrics_summary().as_data_frame().set_index('')
@@ -102,29 +94,27 @@ if __name__ == "__main__":
 
     # cross-validation resutls
     results_df = pd.DataFrame(columns=header_list)
-    i = 0
+    i=0
     for model_id in model_id_list:
-        results_df.loc[i, 'model_id'] = model_id
-        results_df.loc[i, 'dataset'] = 'val'
+        results_df.loc[i,'model_id'] = model_id
+        results_df.loc[i,'dataset'] = 'val'
         model = h2o.get_model(model_id)
-        my_local_model = h2o.download_model(
-            model, path="/gpfs/home/sc9295/Projects/ML_RA_EHR/leaderboard/model_saved")
+        my_local_model = h2o.download_model(model, path="/gpfs/home/sc9295/Projects/ML_RA_EHR/leaderboard/model_saved")
         cv_df = model.cross_validation_metrics_summary().as_data_frame().set_index('')
 
         for metrics in evaluation_metrics_list:
             try:
-                metrics_mean, metrics_std = cv_df.loc[metrics, 'mean'], np.std(
-                    cv_df.loc[metrics, 'cv_1_valid':f'cv_{nfolds}_valid'])
-                results_df.loc[i, metrics+'_mean'] = metrics_mean
-                results_df.loc[i, metrics+'_std'] = metrics_std
+                metrics_mean, metrics_std = cv_df.loc[metrics,'mean'], np.std(cv_df.loc[metrics,'cv_1_valid':f'cv_{nfolds}_valid'])
+                results_df.loc[i,metrics+'_mean'] = metrics_mean
+                results_df.loc[i,metrics+'_std'] = metrics_std
             except KeyError:
                 pass
-        i += 1
-
-        results_df.loc[:, 'challenge'] = dataset.challenge
-
+        i+=1
+        
+        results_df.loc[:,'challenge'] = dataset.challenge
+    
     # test results
-
+    
     output = Path('/gpfs/home/sc9295/Projects/ML_RA_EHR/leaderboard')
     os.makedirs(output, exist_ok=True)
     save_path = output / f'{project_name}_output.csv'
@@ -136,7 +126,7 @@ if __name__ == "__main__":
             has_header = True
     except:
         has_header = False
-
+    
     # save validation output to csv
     with open(save_path, 'a+') as f:
         # create the csv writer
