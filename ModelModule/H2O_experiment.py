@@ -1,4 +1,5 @@
 import h2o
+h2o.init()
 import os
 from h2o.automl import H2OAutoML
 from h2o.estimators.infogram import H2OInfogram
@@ -8,25 +9,28 @@ import numpy as np
 import sys
 import csv
 from pathlib import Path
-sys.path.insert(0, '/gpfs/home/sc9295/Projects/ML_RA_EHR')
+sys.path.insert(0, '.')
 from DataModule.Data_Preparation import CoronnaCERTAINDataset
 import EvaluationModule
-import EvaluationModule_H2O
 pd.options.mode.chained_assignment = None
 
+def add_model_family(row):
+    if "StackedEnsemble" in row['model_id']:
+        return '_'.join(row['model_id'].split('_',3)[:2])
+    else:
+        return row['model_id'].split('_')[0]
+    
 if __name__ == "__main__":
     # define data module
     dataset = CoronnaCERTAINDataset(
-        library_root = '/gpfs/home/sc9295/Projects/ML_RA_EHR/Dataset/',
-        challenge = 'classification', #option: regression, regression_delta, classification, binary_classification, regression_delta_binary
+        library_root = './Dataset/',
+        challenge = "regression_delta", #option: regression_delta, 3_classification, binary_classification
         dataset = 'CORRONA CERTAIN', 
-        process_approach = 'SC', #option: KVB, SC
-        imputation = None, #option: SimpleFill, KNN, SoftImpute, BiScaler, NuclearNormMinimization, IterativeImputer, IterativeSVD, None(raw)
-        patient_group = ['bionaive TNF'], #option: "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"
+        imputation = "SimpleFill", #option: SimpleFill, KNN, IterativeImputer, None(raw)
+        patient_group = "bionaive TNF", #option: "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia"
         drug_group = 'all', #option: "all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"
         time_points = (0,3), 
         train_test_rate = 0.8,
-        remove_low_DAS = True,
         save_csv = False, 
         random_state = 2022,
         verbose=False)
@@ -54,15 +58,16 @@ if __name__ == "__main__":
         test_h2o[y] = test_h2o[y].asfactor()
 
     # Run AutoML for 20 base models
-    project_name = "SC_3_Class_classification_Aug4_final"
+    project_name = f"SC_regression_Aug22_imputation_comparison_{dataset.imputation}"
+    csv_file_name = "SC_regression_Aug22_imputation_comparison_2"
     nfolds = 10
     sample_factors = [1.0,0.5]
     if "regression" in dataset.challenge:
-        aml = H2OAutoML(nfolds=nfolds, seed = 2022, project_name = project_name)
+        aml = H2OAutoML(max_models=30, nfolds=nfolds, seed = dataset.random_state, project_name = project_name)
     elif dataset.challenge == "binary_classification":
-        aml = H2OAutoML(nfolds=nfolds, balance_classes=True, class_sampling_factors=sample_factors, sort_metric='mean_per_class_error', seed = 2022, project_name = project_name)
+        aml = H2OAutoML(nfolds=nfolds, balance_classes=True, class_sampling_factors=sample_factors, sort_metric='mean_per_class_error', seed = dataset.random_state, project_name = project_name)
     elif dataset.challenge == "classification":
-        aml = H2OAutoML(nfolds=nfolds, balance_classes=True, sort_metric='mean_per_class_error', seed = 2022, project_name = project_name)
+        aml = H2OAutoML(nfolds=nfolds, balance_classes=True, sort_metric='mean_per_class_error', seed = dataset.random_state, project_name = project_name)
     # max_runtime_secs
     aml.train(x=x, y=y, training_frame=train_h2o)
     
@@ -73,16 +78,7 @@ if __name__ == "__main__":
 
     model_id_list = lb.as_data_frame()['model_id'].values.tolist()
 
-    # model_id_prefix = []
-    # model_id_list = []
-    # for model_id in lb.as_data_frame()['model_id'].values.tolist():
-    #     if model_id.split('_')[0] not in model_id_prefix:
-    #         model_id_prefix.append(model_id.split('_')[0])
-    #         model_id_list.append(model_id)
-    #     if len(model_id_list) > 10:
-    #         break
-
-    header = ['dataset','challenge', 'model_id']
+    header = ['dataset','challenge', 'imputation', 'model_id']
         
     # get evaluation metrics list
     model = h2o.get_model(model_id_list[0])
@@ -99,7 +95,7 @@ if __name__ == "__main__":
         results_df.loc[i,'model_id'] = model_id
         results_df.loc[i,'dataset'] = 'val'
         model = h2o.get_model(model_id)
-        my_local_model = h2o.download_model(model, path="/gpfs/home/sc9295/Projects/ML_RA_EHR/leaderboard/model_saved")
+        my_local_model = h2o.download_model(model, path="../leaderboard/model_saved")
         cv_df = model.cross_validation_metrics_summary().as_data_frame().set_index('')
 
         for metrics in evaluation_metrics_list:
@@ -112,12 +108,14 @@ if __name__ == "__main__":
         i+=1
         
         results_df.loc[:,'challenge'] = dataset.challenge
+        results_df.loc[:,'imputation'] = dataset.imputation
     
+    results_df.loc[:,'model_family'] = results_df.apply(lambda row:add_model_family(row),axis=1)
     # test results
     
-    output = Path('/gpfs/home/sc9295/Projects/ML_RA_EHR/leaderboard')
+    output = Path('../leaderboard')
     os.makedirs(output, exist_ok=True)
-    save_path = output / f'{project_name}_output.csv'
+    save_path = output / f'{csv_file_name}_output.csv'
 
     # if header exists
     has_header = False

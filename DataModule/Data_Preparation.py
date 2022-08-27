@@ -6,8 +6,9 @@ from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import torch
-from fancyimpute import (KNN, BiScaler, IterativeImputer, IterativeSVD,
-                         NuclearNormMinimization, SimpleFill, SoftImpute)
+# from fancyimpute import (BiScaler, IterativeSVD, SoftImpute)
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import (SimpleImputer, KNNImputer, IterativeImputer)
 from sklearn import preprocessing
 pd.options.mode.chained_assignment = None
 
@@ -51,13 +52,11 @@ class CoronnaCERTAINDataset():
                  library_root: Union[str, Path, os.PathLike],
                  challenge: Optional[Callable] = 'regression',
                  dataset: Optional[Callable] = 'CORRONA CERTAIN',
-                 process_approach: Optional[Callable] = 'KVB',
-                 imputation: Optional[Callable] = 'KNN',
+                 imputation: Optional[Callable] = None,
                  patient_group: Optional[Callable] = ['bionaive TNF'],
                  drug_group: Optional[Callable] = 'all',
                  time_points: Optional[Callable] = (0, 3),
                  train_test_rate: float = 0.8,
-                 remove_low_DAS=False,
                  save_csv: bool = False,
                  random_state: Optional[Callable] = 2022,
                  verbose: int = 0,
@@ -66,27 +65,23 @@ class CoronnaCERTAINDataset():
 
         Args:
             library_root: Path to the root director of library file
-            challenge: regression (numerical, DAS-28CRP value),
-                       regression_delta (numerical, changes of DAS-28CRP)
-                       classification (categorical: Good, Moderate, No Response)
+            challenge: regression_delta (numerical, changes of DAS-28CRP)
+                       3_classification (categorical: Good, Moderate, No Response)
                        binary_classification (categorical: Responder, Non-responders)
             dataset: Dataset used for modeling ("CORRONA CERTAIN")
-            process_approach: Dataset process approach. (KVB - from previous student ) (SC)
             imputation: imputation methods
             patient_group: Patient group
             drug_group: Medication group
             train_test_rate: sample rate for train and test set
-            save_csv: If True, dataframe will be saved in "../Dataset/Coronna_Data_CERTAIN_{approach}_{time_1}M_{time_2}M_{subset}_{dataset}.csv"
+            save_csv: If True, dataframe will be saved in "../Dataset/<>.csv"
         """
         if challenge not in ("regression_delta", "3_classification", "binary_classification"):
             raise ValueError(
                 'challenge should be either "regression_delta", "3_classification", or "binary_classification"')
-        if process_approach not in ("KVB", "SC"):
-            raise ValueError('process_approach should be either "KVB" or "SC"')
-        for patient_group_ in patient_group:
-            if patient_group_ not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"):
-                raise ValueError(
-                    'patient_group should be either "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia", "KVB"')
+        # for patient_group_ in patient_group:
+        if patient_group not in ("all", "bioexp nTNF", "bionaive TNF", "bionaive orencia"):
+            raise ValueError(
+                'patient_group should be either "all", "bioexp nTNF", "bionaive TNF", "bionaive orencia"')
         if drug_group not in ("all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"):
             raise ValueError(
                 'drug_group should be "all", "actemra", "cimzia", "enbrel", "humira", "orencia", "remicade", "rituxan", "simponi"')
@@ -105,27 +100,20 @@ class CoronnaCERTAINDataset():
             df_3M = pd.read_csv(self.library_root /
                                 'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
 
-        if challenge == "regression":
-            self.target = "DAS28_CRP_3M"
-        elif challenge == "regression_delta" or challenge == "regression_delta_binary":
+        if challenge == "regression_delta":
             self.target = "delta"
-        elif challenge == "classification":
+        elif challenge == "3_classification":
             self.target = "DrugResponse"
         elif challenge == "binary_classification":
             self.target = "DrugResponse_binary"
         else:
             self.target = ""
-
-        self.categorical = ["grp", "init_group", "gender", "final_education",
-                            "race_grp", "ethnicity", "newsmoker", "drinker", "ara_func_class"]
         self.challenge = challenge
-        self.process_approach = process_approach
         self.imputation = imputation
         self.patient_group = patient_group
         self.drug_group = drug_group
         self.time_points = time_points
         self.train_test_rate = train_test_rate
-        self.remove_low_DAS = remove_low_DAS
         self.save_csv = save_csv
         self.sample_list = []
         self.random_state = random_state
@@ -133,81 +121,57 @@ class CoronnaCERTAINDataset():
         self.test_csv_loc = ''
         self.verbose = verbose
 
-        if self.process_approach == 'KVB':
-            df = pd.read_csv(self.library_root / "Analytical_Base_Table.csv")
-            df = df.rename(columns={'3MResponse': 'DrugResponse',
-                           'DAS28-CRP_BL': 'DAS28_CRP_0M', 'DAS28-CRP 3m': 'DAS28_CRP_3M'})
-            if self.challenge == "regression":
-                df.insert(len(df.columns)-1, 'DAS28_CRP_3M',
-                          df.pop('DAS28_CRP_3M'))
-                df = df.drop(columns=['DrugResponse'])
-            elif self.challenge == "regression_delta" or self.challenge == "regression_delta_binary":
-                df.loc[:, 'delta'] = df['DAS28_CRP_0M'] - df['DAS28_CRP_3M']
-                df = df.drop(columns=['DrugResponse', 'DAS28_CRP_3M'])
-            elif self.challenge == 'classification':
-                df.insert(len(df.columns)-1, 'DrugResponse',
-                          df.pop('DrugResponse'))
-                df = df.drop(columns=['DAS28_CRP_3M'])
-            elif self.challenge == "binary_classification":
-                df.loc[df['DrugResponse'] == 1, 'DrugResponse_binary'] = 1
-                df.loc[df['DrugResponse'] == 0, 'DrugResponse_binary'] = 1
-                df.loc[df['DrugResponse'] == 2, 'DrugResponse_binary'] = 0
-                df = df.drop(columns=["DAS28_CRP_3M", "DrugResponse"])
-                if self.verbose > 0:
-                    print(
-                        f"Label Encoder, 0: Non-responders (No Response), 1: Responders(Good, Moderate)")
-            self.df_train = df.sample(
-                frac=self.train_test_rate, random_state=self.random_state)
-            self.df_test = df.drop(self.df_train.index)
+        # drop columns
+        df = df_all.drop(columns=['Unnamed: 62', 'Unnamed: 63'])
+        # define categorical features
+        categorical_columns = (df.dtypes == 'object')
+        self.categorical = list(categorical_columns[categorical_columns].index)
+        if "CDate" in self.categorical:
+            self.categorical.remove("CDate")
+        if "UNMC_id" in self.categorical:
+            self.categorical.remove("UNMC_id")
 
-        elif self.process_approach == 'SC':
-            if patient_group == 'KVB':
-                self.sample_list = df_3M['UNMC_id']
+        # impute missing time-series rows
+        df = self.transform_time_series_data(df)
 
-            # drop columns
-            df = df_all.drop(columns=['Unnamed: 62', 'Unnamed: 63'])
+        # train test split (only split rows without NaN in features used to calculate DAS-28CRP into testset)
+        self.train_idx, self.test_idx, df = self.split_data(df)
 
-            # impute missing time-series rows
-            df = self.transform_time_series_data(df)
+        # feature engineering
+        df = self.feature_engineering(df)
+        
+        # Imputation
+        if self.imputation == None:
+            # return raw
+            imputed_train = df[df['UNMC_id'].isin(self.train_idx)]
+            imputed_test = df[df['UNMC_id'].isin(self.test_idx)]
 
-            # train test split (only split rows without NaN in features used to calculate DAS-28CRP into testset)
-            self.train_idx, self.test_idx, df = self.split_data(df)
+        else:
+            imputed_train, imputed_test = self.Apply_imputation(df)
 
-            # feature engineering
-            df = self.feature_engineering(df)
+        # create dataframe by two consecutive months
+        df_train = self.create_dataframe(imputed_train, 'Train')
+        df_test = self.create_dataframe(imputed_test, 'Test')
 
-            # Imputation
-            if self.imputation == None:
-                # return raw
-                imputed_train = df[df['UNMC_id'].isin(self.train_idx)]
-                imputed_test = df[df['UNMC_id'].isin(self.test_idx)]
+        self.save_to_csv(df_train, "Train")
+        self.save_to_csv(df_test, "Test")
 
-            else:
-                imputed_train, imputed_test = self.Apply_imputation(df)
+        if self.save_csv:
+            file_loc = os.path.join(
+                self.library_root, 'tableau_data', f'Coronna_Data_CERTAIN_{self.challenge}_{self.process_approach}_{self.time_points[0]}M_{self.time_points[1]}M_{self.patient_group}_{self.drug_group}', f'{dataset}.csv')
+            file_loc = file_loc.replace(' ', '_')  # avoid spacing
+            self.check_dir(file_loc)
+            if self.verbose > 0:
+                print("save file to:", file_loc)
+            df_train_save = df_train
+            df_train_save['dataset'] = 'Train'
+            df_test_save = df_test
+            df_test_save['dataset'] = 'Test'
+            df = pd.concat([df_train_save, df_test_save])
+            df.to_csv(file_loc, index=False)
 
-            # create dataframe by two consecutive months
-            df_train = self.create_dataframe(imputed_train, 'Train')
-            df_test = self.create_dataframe(imputed_test, 'Test')
-
-            self.save_to_csv(df_train, "Train")
-            self.save_to_csv(df_test, "Test")
-
-            if self.save_csv:
-                file_loc = os.path.join(
-                    self.library_root, 'tableau_data', f'Coronna_Data_CERTAIN_{self.challenge}_{self.process_approach}_{self.time_points[0]}M_{self.time_points[1]}M_{self.patient_group}_{self.drug_group}', f'{dataset}.csv')
-                file_loc = file_loc.replace(' ', '_')  # avoid spacing
-                self.check_dir(file_loc)
-                if self.verbose > 0:
-                    print("save file to:", file_loc)
-                df_train_save = df_train
-                df_train_save['dataset'] = 'Train'
-                df_test_save = df_test
-                df_test_save['dataset'] = 'Test'
-                df = pd.concat([df_train_save, df_test_save])
-                df.to_csv(file_loc, index=False)
-
-            self.df_train = df_train
-            self.df_test = df_test
+        self.df_train = df_train
+        self.df_test = df_test
 
     def transform_time_series_data(self, df):
         # non_time_varying features
@@ -232,16 +196,11 @@ class CoronnaCERTAINDataset():
         out_final = pd.concat([demo_out, time_varying_out], axis=1)
         return out_final
 
-    def impute_pt_global_assess(self, row):
-        if pd.isna(row['pt_global_assess']) & pd.notna(row['md_global_assess']):
-            return row['md_global_assess']
-        else:
-            return row['pt_global_assess']
-
     def split_data(self, df):
         # data filter
         if (self.patient_group != 'all') & (self.patient_group != 'KVB'):
-            df = df[df['init_group'].isin(self.patient_group)]
+            # df = df[df['init_group'].isin(self.patient_group)]
+            df = df[df['init_group']==self.patient_group]
         if len(self.sample_list) > 0:
             if self.verbose > 0:
                 print(self.sample_list)
@@ -274,7 +233,7 @@ class CoronnaCERTAINDataset():
             print(
                 "feature engineering, drop columns due to 70% missing value:", columns_drop)
         df = df.drop(columns=list(columns_drop))
-        df = df.drop(columns=['CDate'])  # useless
+        df = df.drop(columns=['CDate'])  # visiting date should be dropped since we have futime
 
         # labelEncoder, tranform categorical features
         encoders = dict()
@@ -290,7 +249,6 @@ class CoronnaCERTAINDataset():
 
     def Apply_imputation(self, df):
         # use md to impute pt NaN
-        # df['pt_global_assess'] = df.apply(lambda row: self.impute_pt_global_assess(row), axis=1)
 
         # filter train and test
         train_UNMC_id = df[df['UNMC_id'].isin(self.train_idx)]['UNMC_id']
@@ -301,25 +259,26 @@ class CoronnaCERTAINDataset():
 
         # imputation
         if self.imputation == 'SimpleFill':
-            imputer = SimpleFill()
+            imputer = SimpleImputer(strategy='mean')
         elif self.imputation == 'KNN':
-            imputer = KNN(k=15, verbose=False)
-        elif self.imputation == 'SoftImpute':
-            imputer = SoftImpute(verbose=False)
-        elif self.imputation == 'NuclearNormMinimization':
-            imputer = NuclearNormMinimization()
-        elif self.imputation == 'BiScaler':
-            imputer = BiScaler(verbose=False)
+            imputer = KNNImputer(n_neighbors=30, weights="uniform")
         elif self.imputation == 'IterativeImputer':
-            imputer = IterativeImputer(verbose=False)
-        elif self.imputation == 'IterativeSVD':
-            imputer = IterativeSVD(verbose=False)
+            imputer = IterativeImputer(max_iter=10)
+        # elif self.imputation == 'SoftImpute':
+        #     imputer = SoftImpute(verbose=False)
+        # elif self.imputation == 'NuclearNormMinimization':
+        #     imputer = NuclearNormMinimization()
+        # elif self.imputation == 'BiScaler':
+        #     imputer = BiScaler(verbose=False)
+        # elif self.imputation == 'IterativeSVD':
+        #     imputer = IterativeSVD(verbose=False)
 
         # impute train set
         if self.verbose > 0:
             print("Missing values in train before imputation:",
                   len(train[train.isna().any(axis=1)]))
-        imputed_train = imputer.fit_transform(train)
+        imputer.fit(train)
+        imputed_train = imputer.transform(train)
         imputed_train_df = pd.DataFrame(imputed_train, columns=train.columns)
         imputed_train_df['UNMC_id'] = train_UNMC_id.values
         if self.verbose > 0:
@@ -360,8 +319,7 @@ class CoronnaCERTAINDataset():
         df2 = df2[['UNMC_id', 'DAS28_CRP']]
 
         # remove baseline DAS28 < 3.2
-        if self.remove_low_DAS:
-            df1 = df1[df1['DAS28_CRP'] > 3.2]
+        df1 = df1[df1['DAS28_CRP'] > 3.2]
 
         # merge target
         df_merged = pd.merge(df1, df2, how="left",
