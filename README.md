@@ -1,6 +1,6 @@
 # Ensemble DRP
 
-Ensmeble DRP is Ensemble Learning for Drug Response Prediction. 
+Ensmeble DRP is Ensemble Learning for Drug Response Prediction with its primary aim to use ensemble machine learning methods to predict patients's response to drugs using tabular electronic health records. Specifically, we built a pipeline for data preprocessing and two-stage approach for modeling drug effectiveness.
 
 ## Datasets
 
@@ -25,4 +25,7 @@ pip install -e .
 All dependencies will be installed using packages in `requirements.txt`.
 
 ## Explore Files
-+ 
+
++ [Data_Preparation.py](https://github.com/Gaskell-1206/Ensemble_DRP/blob/H2O-Incoporation/DataModule/Data_Preparation.py): data preprocessing pipeline, including feature engineering, missing value imputation, train test split.
++ [H2O_experiment.py](https://github.com/Gaskell-1206/Ensemble_DRP/blob/H2O-Incoporation/ModelModule/H2O_experiment.py): incorporated h2o auto machine learning framework, including base model families and stakced ensemble learning.
++ [Ensemble_DRP_visualization.ipynb](https://github.com/Gaskell-1206/Ensemble_DRP/blob/H2O-Incoporation/Ensemble_DRP_visualization.ipynb): model performance comparison and visualization.

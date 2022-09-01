@@ -11,7 +11,7 @@ import csv
 from pathlib import Path
 sys.path.insert(0, '.')
 from DataModule.Data_Preparation import CoronnaCERTAINDataset
-import EvaluationModule
+import ModelModule.EvaluationModule as EvaluationModule
 pd.options.mode.chained_assignment = None
 
 def add_model_family(row):
