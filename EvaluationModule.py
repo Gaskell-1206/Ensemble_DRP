@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import smogn
-from imblearn.combine import SMOTEENN, SMOTETomek
-from imblearn.under_sampling import EditedNearestNeighbours, TomekLinks
+# import smogn
+# from imblearn.combine import SMOTEENN, SMOTETomek
+# from imblearn.under_sampling import EditedNearestNeighbours, TomekLinks
 from scipy.stats import pearsonr
 from sklearn import metrics
 from sklearn.model_selection import (KFold, RepeatedKFold,
