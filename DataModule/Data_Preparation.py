@@ -126,6 +126,7 @@ class CoronnaCERTAINDataset():
         # define categorical features
         categorical_columns = (df.dtypes == 'object')
         self.categorical = list(categorical_columns[categorical_columns].index)
+        print("categorical features:", self.categorical)
         if "CDate" in self.categorical:
             self.categorical.remove("CDate")
         if "UNMC_id" in self.categorical:
@@ -407,19 +408,3 @@ class CoronnaCERTAINDataset():
 
     def get_test(self):
         return self.df_test, self.test_csv_loc
-
-# dataset = CoronnaCERTAINDataset(
-#     library_root='/Users/gaskell/Dropbox/Mac/Desktop/Autoimmune_Disease/Code/ML_RA_EHR/Dataset/',
-#     challenge="regression",
-#     dataset='CORRONA CERTAIN',
-#     process_approach='SC',
-#     imputation='KNN',
-#     patient_group='bionaive TNF',
-#     drug_group='all',
-#     time_points=(0,3),
-#     train_test_rate=0.8,
-#     save_csv=False,
-#     random_state=2022)
-
-# train = dataset.get_train()
-# test = dataset.get_test()
