@@ -12,7 +12,6 @@ from sklearn.impute import (SimpleImputer, KNNImputer, IterativeImputer)
 from sklearn import preprocessing
 pd.options.mode.chained_assignment = None
 
-
 def calculate_DAS28_CRP(row):
     DAS28_CRP = 0.56*math.sqrt(row['tender_jts_28']) + 0.28*math.sqrt(
         row['swollen_jts_28']) + 0.014*row['pt_global_assess'] + 0.36*np.log(row['usresultsCRP']+1) + 0.96
