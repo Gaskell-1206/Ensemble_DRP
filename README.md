@@ -10,7 +10,7 @@ More information about CORRONA CERTAIN can be found in multiple publications:
 + CORRONA: [The CORRONA database](http://dx.doi.org/10.1136/ard.2005.043497)
 + CERTAIN: [Design characteristics of the CORRONA CERTAIN study: a comparative effectiveness study of biologic agents for rheumatoid arthritis patients](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3978136/)
 
-+ The toy dataset is provided 
++ The toy dataset is provided in this project for testing.
 
 ## Dependencies and Installation
 
