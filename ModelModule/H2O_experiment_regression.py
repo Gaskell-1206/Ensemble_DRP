@@ -13,7 +13,7 @@ import sys
 import csv
 from pathlib import Path
 sys.path.insert(0, '/gpfs/home/sc9295/Projects/Ensemble_DRP')
-from DataModule.Data_Preparation import CoronnaCERTAINDataset
+from DataModule.Data_Preparation import DRP_Dataset
 import ModelModule.EvaluationModule as EvaluationModule
 pd.options.mode.chained_assignment = None
 
@@ -151,7 +151,7 @@ def get_test_performance(model, test, test_h2o, results_df, i):
 
 # define data module
 def get_data():
-    dataset = CoronnaCERTAINDataset(
+    dataset = DRP_Dataset(
         library_root = '/gpfs/home/sc9295/Projects/Ensemble_DRP/Dataset',
         challenge = "regression_delta", #option: regression_delta, 3_classification, binary_classification
         dataset = 'CORRONA CERTAIN', 

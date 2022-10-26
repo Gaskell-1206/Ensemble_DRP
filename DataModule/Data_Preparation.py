@@ -44,8 +44,8 @@ def responseClassify(row, baseline='DAS28_CRP_0M', next='DAS28_CRP_3M'):
         return "Unknown"
 
 
-class CoronnaCERTAINDataset():
-    """CORRONA CERTAIN dataset."""
+class DRP_Dataset():
+    """Drug Response Prediction dataset."""
 
     def __init__(self,
                  library_root: Union[str, Path, os.PathLike],
@@ -65,14 +65,17 @@ class CoronnaCERTAINDataset():
         Args:
             library_root: Path to the root director of library file
             challenge: regression_delta (numerical, changes of DAS-28CRP)
-                       3_classification (categorical: Good, Moderate, No Response)
                        binary_classification (categorical: Responder, Non-responders)
-            dataset: Dataset used for modeling ("CORRONA CERTAIN")
+                       3_classification (categorical: Good, Moderate, No Response)
+            dataset: Dataset used for modeling (default:"CORRONA CERTAIN")
             imputation: imputation methods
             patient_group: Patient group
             drug_group: Medication group
+            time_points: based on "futime" (n,m), the baseline is n (0), the time for prediction is m.
             train_test_rate: sample rate for train and test set
             save_csv: If True, dataframe will be saved in "../Dataset/<>.csv"
+            random_state: global random seed
+            verbose: if verbose, detailed information used for debugging
         """
         if challenge not in ("regression_delta", "3_classification", "binary_classification"):
             raise ValueError(
@@ -98,7 +101,9 @@ class CoronnaCERTAINDataset():
             df_all = pd.read_csv(self.library_root / library_name)
             df_3M = pd.read_csv(self.library_root /
                                 'Coronna_Data_CERTAIN_KVB_0M_3M.csv')
-
+        elif dataset == 'CORRONA CERTAIN TOY':
+            library_name = 'Coronna_CERTAIN_toy.csv'
+            df_all = pd.read_csv(self.library_root / library_name)
         if challenge == "regression_delta":
             self.target = "delta"
         elif challenge == "3_classification":
@@ -133,13 +138,10 @@ class CoronnaCERTAINDataset():
 
         # impute missing time-series rows
         df = self.transform_time_series_data(df)
-
         # train test split (only split rows without NaN in features used to calculate DAS-28CRP into testset)
         self.train_idx, self.test_idx, df = self.split_data(df)
-
         # feature engineering
         df = self.feature_engineering(df)
-        
         # Imputation
         if self.imputation == None:
             # return raw
@@ -197,6 +199,7 @@ class CoronnaCERTAINDataset():
         return out_final
 
     def split_data(self, df):
+        # print("df:",df)
         # data filter
         if (self.patient_group != 'all') & (self.patient_group != 'KVB'):
             # df = df[df['init_group'].isin(self.patient_group)]
@@ -207,7 +210,7 @@ class CoronnaCERTAINDataset():
             df = df[df['UNMC_id'].isin(self.sample_list)]
 
         # drop rows that have more than 10 NaN columns
-        df = df.dropna(thresh=len(df.columns)-10, axis=0)
+        # df = df.dropna(thresh=len(df.columns)-10, axis=0)
 
         df1 = df[df['futime'] == self.time_points[0]].drop(columns=['CDate'])
         df2 = df[df['futime'] == self.time_points[1]].drop(columns=['CDate'])
